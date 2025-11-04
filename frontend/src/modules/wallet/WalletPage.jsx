@@ -5,6 +5,7 @@ import axios from "axios";
 export default function WalletPage() {
   const [address, setAddress] = useState(null);
   const [balance, setBalance] = useState(null);
+  const [tokens, setTokens] = useState([]);
 
   async function connectWallet() {
     if (typeof window.ethereum !== "undefined") {
@@ -16,10 +17,18 @@ export default function WalletPage() {
       // GET BALANCE FROM BACKEND
       const res = await axios.get(`http://localhost:3100/wallet/${walletAddress}`);
       setBalance(res.data.balance);
+      await loadTokens(walletAddress);
     } else {
       alert("MetaMask nije pronađen.");
     }
   }
+
+  async function loadTokens(addr) {
+    const res = await axios.get(`http://localhost:3100/wallet/${addr}/tokens`);
+    setTokens(res.data.result.tokenBalances);
+
+  }
+
 
   return (
     <div>
@@ -33,6 +42,17 @@ export default function WalletPage() {
       ) : (
         <button onClick={connectWallet}>Connect MetaMask</button>
       )}
+
+      {tokens.length === 0 && <p>No tokens found.</p>}
+
+
+      {tokens.map((t) => (
+        <div key={t.contractAddress} className="p-3 border bg-gray-800 text-white rounded">
+          <p>Contract: {t.contractAddress}</p>
+          <p>Balance (raw): {t.tokenBalance}</p>
+        </div>
+      ))}
+
     </div>
   );
 }

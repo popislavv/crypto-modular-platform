@@ -22,7 +22,7 @@ app.get("/market", async (req: express.Request, res: express.Response) => {
   }
 });
 
-app.get("/wallet/:address", async (req: express.Request, res: express.Response) => {
+app.get("/wallet/:address/tokens", async (req: express.Request, res: express.Response) => {
   const { address } = req.params;
   const ALCHEMY_URL = process.env.ALCHEMY_URL;
 
@@ -30,17 +30,14 @@ app.get("/wallet/:address", async (req: express.Request, res: express.Response) 
     const response = await axios.post(ALCHEMY_URL!, {
       jsonrpc: "2.0",
       id: 1,
-      method: "eth_getBalance",
-      params: [address, "latest"],
+      method: "alchemy_getTokenBalances",
+      params: [address, "erc20"],
     });
 
-    const balanceInWei = parseInt(response.data.result, 16);
-    const balanceInEth = balanceInWei / 1e18;
-
-    res.json({ address, balance: balanceInEth });
+    res.json(response.data.result);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: "wallet data error" });
+    res.status(500).json({ error: "token data error" });
   }
 });
 

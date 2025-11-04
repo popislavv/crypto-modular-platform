@@ -90,6 +90,24 @@ app.get("/token/:contract/metadata", async (req: express.Request, res: express.R
   }
 });
 
+//Transactions
+app.get("/wallet/:address/tx", async (req, res) => {
+  const { address } = req.params;
+  const key = process.env.ETHERSCAN_KEY;
+
+  try {
+    const url = `https://api.etherscan.io/api?module=account&action=txlist&address=${address}&page=1&offset=10&sort=desc&apikey=${key}`;
+
+    const response = await axios.get(url);
+
+    res.json(response.data.result); // lista transakcija
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "tx list error" });
+  }
+});
+
+
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
 });

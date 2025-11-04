@@ -1,12 +1,15 @@
 import { useState, useEffect } from "react";
 import { ethers, formatUnits } from "ethers";
 import axios from "axios";
+import Card from "../../components/Card";
 
 
 export default function WalletPage() {
   const [address, setAddress] = useState(null);
   const [balance, setBalance] = useState(null);
   const [tokens, setTokens] = useState([]);
+  const [txs, setTxs] = useState([]);
+
 
   async function connectWallet() {
     if (typeof window.ethereum !== "undefined") {
@@ -19,6 +22,8 @@ export default function WalletPage() {
       const res = await axios.get(`http://localhost:3100/wallet/${walletAddress}`);
       setBalance(res.data.balance);
       await loadTokens(walletAddress);
+      await loadTransactions(walletAddress);
+
     } else {
       alert("MetaMask nije pronađen.");
     }
@@ -59,9 +64,28 @@ export default function WalletPage() {
   );
   }
 
+  async function loadTransactions(addr) {
+  const res = await axios.get(`http://localhost:3100/wallet/${addr}/tx`);
+  setTxs(res.data);
+}
+
+
   return (
     <div>
       <h1>Wallet</h1>
+
+              <input
+          type="text"
+          placeholder="Paste any wallet address"
+          className="p-2 border rounded text-black"
+          onKeyDown={(e) => {
+            if (e.key === "Enter") loadTokens(e.target.value);
+          }}
+        />
+        <button onClick={() => loadTokens(prompt("Enter address"))}>
+          Load other address
+        </button>
+
 
       {address ? (
         <>
@@ -76,8 +100,19 @@ export default function WalletPage() {
 
 
       {tokens.map((t) => (
-        <div key={t.contractAddress} className="p-3 border bg-gray-800 text-white rounded">
+        <Card key={t.contractAddress}>
           <TokenDisplay token={t} />
+        </Card>
+      ))}
+
+      <h2 className="mt-4 text-xl font-bold">Transactions</h2>
+
+      {txs.length === 0 && <p>No transactions found.</p>}
+
+      {txs.map((tx) => (
+        <div key={tx.hash} className="p-3 border bg-gray-800 text-white rounded my-2">
+          <p>Hash: {tx.hash.slice(0,12)}...</p>
+          <p>Value: {tx.value / 1e18} ETH</p>
         </div>
       ))}
 

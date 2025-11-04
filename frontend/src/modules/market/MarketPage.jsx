@@ -12,6 +12,21 @@ export default function MarketPage() {
   useEffect(() => {
     loadData();
   }, []);
+  useEffect(() => {
+    const saved = localStorage.getItem("refreshInterval");
+    let refreshSec = saved ? Number(saved) : 60;
+
+    if (refreshSec < 30) refreshSec = 30; // zaštita od rate limita
+
+    const interval = setInterval(() => {
+      loadData();
+    }, refreshSec * 1000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+
+
 
   return (
     <div className="p-6">

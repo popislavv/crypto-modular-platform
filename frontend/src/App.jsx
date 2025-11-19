@@ -6,6 +6,8 @@ import MarketPage from "./modules/market/MarketPage";
 import WalletPage from "./modules/wallet/WalletPage.jsx";
 import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
 import SettingsPage from "./modules/settings/SettingsPage.jsx";
+import CoinDetailPage from "./modules/market/CoinDetailPage";
+
 
 function App() {
   return (
@@ -17,6 +19,7 @@ function App() {
     <Routes>
       <Route path="/" element={<MarketPage />} />
       <Route path="/wallet" element={<WalletPage />} />
+      <Route path="/coin/:id" element={<CoinDetailPage />} />
       <Route path="/settings" element={<SettingsPage />} />
     </Routes>
   </BrowserRouter>

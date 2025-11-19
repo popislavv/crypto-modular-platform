@@ -8,20 +8,41 @@ const PORT = 3100;
 
 app.use(cors());
 
+// 🟡 SIMPLE CACHE ZA MARKET
+let lastMarketData: any[] = [];
+let lastMarketFetch = 0;
+
 // Health check
 app.get("/ping", function (req: express.Request, res: express.Response) {
   res.json({ message: "Backend radi ✅" });
 });
 
-// Market (CoinGecko)
+// Market (CoinGecko) + cache
 app.get("/market", async (req: express.Request, res: express.Response) => {
+  const now = Date.now();
+
+  // ako imamo cache noviji od 60 sekundi → vrati to, ne zovi CoinGecko ponovo
+  if (lastMarketData.length && now - lastMarketFetch < 60_000) {
+    return res.json(lastMarketData);
+  }
+
   try {
     const response = await axios.get(
       "https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd"
     );
-  res.json(response.data);
+
+    lastMarketData = response.data;
+    lastMarketFetch = now;
+
+    res.json(response.data);
   } catch (error) {
     console.error(error);
+
+    // ako imamo stari cache, bolje i to nego prazna stranica
+    if (lastMarketData.length) {
+      return res.json(lastMarketData);
+    }
+
     res.status(500).json({ error: "market data error" });
   }
 });
@@ -90,7 +111,7 @@ app.get("/token/:contract/metadata", async (req: express.Request, res: express.R
   }
 });
 
-//Transactions
+// Transactions (Etherscan)
 app.get("/wallet/:address/tx", async (req, res) => {
   const { address } = req.params;
   const key = process.env.ETHERSCAN_KEY;
@@ -106,7 +127,6 @@ app.get("/wallet/:address/tx", async (req, res) => {
     res.status(500).json({ error: "tx list error" });
   }
 });
-
 
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);

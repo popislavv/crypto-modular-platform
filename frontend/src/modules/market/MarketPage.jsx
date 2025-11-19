@@ -25,12 +25,28 @@ export default function MarketPage() {
     return () => clearInterval(interval);
   }, []);
 
+  const [error, setError] = useState(null);
+
+async function loadData() {
+  try {
+    setError(null);
+    const res = await axios.get("http://localhost:3100/market");
+    setCoins(res.data);
+  } catch (e) {
+    console.error(e);
+    setCoins([]);
+    setError("Market data error. Try again in a bit.");
+  }
+}
+
 
 
 
   return (
-    <div className="p-6">
-      <h1 className="text-2xl font-bold mb-4">Market Overview</h1>
+  <div className="page text-white">
+    <h1 className="text-3xl font-bold mb-6">Market</h1>
+
+        {error && <p className="text-red-400 mb-2">{error}</p>}
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {coins.map((coin) => (
@@ -41,6 +57,7 @@ export default function MarketPage() {
           </div>
         ))}
       </div>
+      
     </div>
   );
 }

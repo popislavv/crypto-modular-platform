@@ -1,14 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-
-function formatNumber(value) {
-  if (!value && value !== 0) return "-";
-  if (value >= 1_000_000_000_000) return `${(value / 1_000_000_000_000).toFixed(2)}T`;
-  if (value >= 1_000_000_000) return `${(value / 1_000_000_000).toFixed(2)}B`;
-  if (value >= 1_000_000) return `${(value / 1_000_000).toFixed(2)}M`;
-  return value.toLocaleString();
-}
+import { useSettings } from "../../context/SettingsContext";
+import { formatCompact, formatCurrency } from "../../utils/formatters";
 
 export default function MarketPage() {
   const [coins, setCoins] = useState([]);
@@ -19,6 +13,7 @@ export default function MarketPage() {
   const [error, setError] = useState(null);
 
   const navigate = useNavigate();
+  const { currency } = useSettings();
 
   async function loadData() {
     try {
@@ -92,7 +87,7 @@ export default function MarketPage() {
           </div>
           <div className="flex flex-wrap gap-3 text-sm">
             <span className="rounded-full border border-emerald-400/30 bg-emerald-500/10 px-3 py-1 text-emerald-200">Real-time</span>
-            <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-slate-200">USD quotes</span>
+            <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-slate-200">{currency} quotes</span>
             <span className="rounded-full border border-blue-400/30 bg-blue-500/10 px-3 py-1 text-blue-200">Pro table</span>
           </div>
         </div>
@@ -100,11 +95,11 @@ export default function MarketPage() {
         <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <div className="rounded-2xl border border-white/10 bg-white/5 p-4 shadow-inner shadow-black/30">
             <p className="text-xs text-slate-400">Total market cap</p>
-            <p className="text-2xl font-semibold text-glow text-white">${formatNumber(metrics.totalMarketCap)}</p>
+            <p className="text-2xl font-semibold text-glow text-white">{formatCompact(metrics.totalMarketCap, currency)}</p>
           </div>
           <div className="rounded-2xl border border-white/10 bg-white/5 p-4 shadow-inner shadow-black/30">
             <p className="text-xs text-slate-400">24h volume</p>
-            <p className="text-2xl font-semibold text-white">${formatNumber(metrics.totalVolume)}</p>
+            <p className="text-2xl font-semibold text-white">{formatCompact(metrics.totalVolume, currency)}</p>
           </div>
           <div className="rounded-2xl border border-white/10 bg-white/5 p-4 shadow-inner shadow-black/30">
             <p className="text-xs text-slate-400">BTC dominance</p>
@@ -188,11 +183,11 @@ export default function MarketPage() {
                   </span>
                 </div>
                 <div className="mt-3 text-2xl font-bold text-white">
-                  ${coin.current_price.toLocaleString()}
+                  {formatCurrency(coin.current_price, currency)}
                 </div>
                 <div className="mt-2 flex items-center justify-between text-xs text-slate-400">
                   <span>Market cap</span>
-                  <span className="font-semibold text-slate-200">${formatNumber(coin.market_cap)}</span>
+                  <span className="font-semibold text-slate-200">{formatCompact(coin.market_cap, currency)}</span>
                 </div>
               </div>
             );
@@ -245,11 +240,11 @@ export default function MarketPage() {
                         </div>
                       </td>
                       <td className="px-3 py-3 text-right text-white">
-                        ${coin.current_price.toLocaleString()}
+                        {formatCurrency(coin.current_price, currency)}
                       </td>
                       <td className={`px-3 py-3 text-right ${changeColor}`}>{change24h?.toFixed(2)}%</td>
-                      <td className="px-3 py-3 text-right text-white">${formatNumber(coin.market_cap)}</td>
-                      <td className="px-3 py-3 text-right text-white">${formatNumber(coin.total_volume)}</td>
+                      <td className="px-3 py-3 text-right text-white">{formatCompact(coin.market_cap, currency)}</td>
+                      <td className="px-3 py-3 text-right text-white">{formatCompact(coin.total_volume, currency)}</td>
                     </tr>
                   );
                 })}

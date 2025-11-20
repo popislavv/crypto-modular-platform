@@ -16,6 +16,37 @@
   border-radius: 24px;
 }
 
+.theme-light .glass-panel {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.75));
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  box-shadow: 0 20px 70px rgba(148, 163, 184, 0.3);
+  color: #0f172a;
+}
+
 .text-glow {
   text-shadow: 0 10px 30px rgba(56, 189, 248, 0.4);
+}
+
+.theme-light .text-white {
+  color: #0f172a !important;
+}
+
+.theme-light .text-slate-300 {
+  color: #475569 !important;
+}
+
+.theme-light .text-slate-400 {
+  color: #64748b !important;
+}
+
+.theme-light .bg-white\/5 {
+  background-color: rgba(255, 255, 255, 0.9) !important;
+}
+
+.theme-light .border-white\/10 {
+  border-color: rgba(15, 23, 42, 0.08) !important;
+}
+
+.theme-light .border-white\/5 {
+  border-color: rgba(15, 23, 42, 0.06) !important;
 }

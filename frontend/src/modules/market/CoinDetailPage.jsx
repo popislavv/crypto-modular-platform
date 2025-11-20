@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import axios from "axios";
+import { useSettings } from "../../context/SettingsContext";
+import { formatCurrency } from "../../utils/formatters";
 import {
   AreaChart,
   Area,
@@ -12,9 +14,9 @@ import {
   CartesianGrid,
 } from "recharts";
 
-const RANGE_OPTIONS = ["1d", "7d", "30d", "1y"];
+const RANGE_OPTIONS = ["24h", "7d", "30d", "1y"];
 const RANGE_TO_DAYS = {
-  "1d": 1,
+  "24h": 1,
   "7d": 7,
   "30d": 30,
   "1y": 365,
@@ -22,14 +24,21 @@ const RANGE_TO_DAYS = {
 
 export default function CoinDetailPage() {
   const { id } = useParams(); // npr. "bitcoin"
+  const { chartRange, currency } = useSettings();
   const [coin, setCoin] = useState(null);
   const [chartData, setChartData] = useState([]);
-  const [range, setRange] = useState("7d");
+  const [range, setRange] = useState(chartRange || "7d");
   const [activeTab, setActiveTab] = useState("overview");
   const [loading, setLoading] = useState(false);
   const [chartLoading, setChartLoading] = useState(false);
   const [error, setError] = useState(null);
   const [chartError, setChartError] = useState(null);
+
+  useEffect(() => {
+    if (chartRange && RANGE_OPTIONS.includes(chartRange)) {
+      setRange(chartRange);
+    }
+  }, [chartRange]);
 
   // osnovni podaci o coinu
   useEffect(() => {
@@ -71,7 +80,7 @@ export default function CoinDetailPage() {
           const d = new Date(ts);
 
           let label;
-          if (range === "1d") {
+          if (range === "24h") {
             label = d.toLocaleTimeString("en-US", {
               hour: "2-digit",
               minute: "2-digit",
@@ -105,7 +114,7 @@ export default function CoinDetailPage() {
     return [
       {
         label: "Market Cap",
-        value: `$${md.market_cap.usd.toLocaleString()}`,
+        value: formatCurrency(md.market_cap.usd, currency),
         tone: "text-emerald-300",
       },
       {
@@ -125,11 +134,11 @@ export default function CoinDetailPage() {
       },
       {
         label: "24h Volume",
-        value: `$${md.total_volume.usd.toLocaleString()}`,
+        value: formatCurrency(md.total_volume.usd, currency),
         tone: "text-sky-200",
       },
     ];
-  }, [coin]);
+  }, [coin, currency]);
 
   return (
     <div className="space-y-6 text-white">
@@ -155,7 +164,7 @@ export default function CoinDetailPage() {
                 <h1 className="text-3xl font-bold text-white">{coin.name}</h1>
                 {coin.market_data && (
                   <p className="text-xl font-semibold text-emerald-300">
-                    ${coin.market_data.current_price.usd.toLocaleString()}
+                    {formatCurrency(coin.market_data.current_price.usd, currency)}
                   </p>
                 )}
               </div>

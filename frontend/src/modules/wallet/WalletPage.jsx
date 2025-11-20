@@ -2,11 +2,14 @@ import { useEffect, useMemo, useState } from "react";
 import { ethers, formatUnits } from "ethers";
 import axios from "axios";
 import Card from "../../components/Card";
+import { useSettings } from "../../context/SettingsContext";
+import { formatCurrency } from "../../utils/formatters";
 
 const LAST_WALLET_KEY = "lastWalletAddress";
 const metadataCache = new Map();
 
 export default function WalletPage() {
+  const { currency } = useSettings();
   const [address, setAddress] = useState(null); // aktivna adresa
   const [inputAddress, setInputAddress] = useState(""); // ono što piše u inputu
   const [balance, setBalance] = useState(null);
@@ -234,7 +237,12 @@ export default function WalletPage() {
             <Card variant="glass">
               <p className="text-xs uppercase tracking-wide text-slate-400">Active address</p>
               <p className="mt-1 break-all text-lg font-semibold">{address}</p>
-              {balance !== null && <p className="mt-3 text-2xl font-bold text-emerald-300">{balance} ETH</p>}
+              {balance !== null && (
+                <>
+                  <p className="mt-3 text-2xl font-bold text-emerald-300">{balance} ETH</p>
+                  <p className="text-xs text-slate-400">≈ {formatCurrency(balance, currency)} (display currency)</p>
+                </>
+              )}
               <p className="mt-1 text-xs text-slate-400">Auto-saves last address</p>
             </Card>
             <Card variant="glass" className="flex items-center justify-between">

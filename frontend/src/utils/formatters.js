@@ -4,17 +4,32 @@ const currencySymbols = {
   BAM: "KM",
 };
 
-export function formatCurrency(value, currency = "USD") {
+const FX_RATES_FROM_USD = {
+  USD: 1,
+  EUR: 0.92,
+  BAM: 1.8,
+};
+
+export function convertFromUsd(value, currency = "USD") {
+  if (value === null || value === undefined || Number.isNaN(value)) return 0;
+  const rate = FX_RATES_FROM_USD[currency] ?? 1;
+  return Number(value) * rate;
+}
+
+export function formatCurrency(value, currency = "USD", { convert = true } = {}) {
   if (value === null || value === undefined || Number.isNaN(value)) return "-";
+
+  const preparedValue = convert ? convertFromUsd(value, currency) : value;
+
   try {
     return new Intl.NumberFormat("en-US", {
       style: "currency",
       currency,
       maximumFractionDigits: 2,
-    }).format(value);
+    }).format(preparedValue);
   } catch (e) {
     const symbol = currencySymbols[currency] || "";
-    return `${symbol}${Number(value).toLocaleString()}`;
+    return `${symbol}${Number(preparedValue).toLocaleString()}`;
   }
 }
 

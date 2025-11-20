@@ -9,7 +9,7 @@ const LAST_WALLET_KEY = "lastWalletAddress";
 const metadataCache = new Map();
 
 export default function WalletPage() {
-  const { currency } = useSettings();
+  const { currency, theme } = useSettings();
   const [address, setAddress] = useState(null); // aktivna adresa
   const [inputAddress, setInputAddress] = useState(""); // ono što piše u inputu
   const [balance, setBalance] = useState(null);
@@ -17,6 +17,7 @@ export default function WalletPage() {
   const [txs, setTxs] = useState([]);
   const [loading, setLoading] = useState(false);
   const [walletError, setWalletError] = useState(null);
+  const isLight = theme === "light";
 
   // ⬇️ Minimalno: na mount samo vratimo zadnju adresu u input (NE pucamo odmah API pozive)
   useEffect(() => {
@@ -62,28 +63,28 @@ export default function WalletPage() {
         setBalance(balanceRes.value);
       } else {
         setBalance(null);
-        setWalletError("Nismo mogli da učitamo balans. Pokušaj ponovo.");
+        setWalletError("We couldn't load your balance. Please try again.");
       }
 
       if (tokensRes.status === "fulfilled") {
         setTokens(tokensRes.value);
       } else {
         setTokens([]);
-        setWalletError("Tokeni nisu mogli da se učitaju.");
+        setWalletError("Tokens could not be loaded.");
       }
 
       if (txRes.status === "fulfilled") {
         setTxs(txRes.value);
       } else {
         setTxs([]);
-        setWalletError("Transakcije nisu dostupne u ovom trenutku.");
+        setWalletError("Transactions are unavailable right now.");
       }
     } catch (err) {
       console.error(err);
       setBalance(null);
       setTokens([]);
       setTxs([]);
-      setWalletError("Neočekivana greška prilikom učitavanja walleta.");
+      setWalletError("Unexpected error while loading the wallet.");
     } finally {
       setLoading(false);
     }
@@ -92,7 +93,7 @@ export default function WalletPage() {
   // MetaMask connect → koristi isti mehanizam
   async function connectWallet() {
     if (typeof window.ethereum === "undefined") {
-      alert("MetaMask nije pronađen.");
+      alert("MetaMask not detected.");
       return;
     }
 
@@ -122,7 +123,7 @@ export default function WalletPage() {
     return res.data;
   }
 
-  function TokenDisplay({ token }) {
+  function TokenDisplay({ token, isLight }) {
     const [meta, setMeta] = useState(null);
     const [metaError, setMetaError] = useState(null);
 
@@ -151,29 +152,37 @@ export default function WalletPage() {
     }, [token.contractAddress]);
 
     if (metaError) {
-      return <div className="text-sm text-rose-300">{metaError}</div>;
+      return (
+        <div className={`text-sm ${isLight ? "text-rose-600" : "text-rose-300"}`}>{metaError}</div>
+      );
     }
 
-    if (!meta) return <div className="text-sm text-slate-400">Loading...</div>;
+    if (!meta) return <div className={`text-sm ${isLight ? "text-slate-600" : "text-slate-400"}`}>Loading...</div>;
 
     const humanBalance = formatUnits(token.tokenBalance, meta.decimals);
 
     return (
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white/5 text-sm font-semibold uppercase text-cyan-200">
+          <div
+            className={`flex h-10 w-10 items-center justify-center rounded-full text-sm font-semibold uppercase ${
+              isLight ? "bg-slate-100 text-cyan-700" : "bg-white/5 text-cyan-200"
+            }`}
+          >
             {meta.symbol?.slice(0, 3) || "TKN"}
           </div>
           <div>
-            <p className="font-semibold text-white">
+            <p className="font-semibold">
               {meta.name} ({meta.symbol})
             </p>
-            <p className="text-xs text-slate-400">{token.contractAddress.slice(0, 8)}...</p>
+            <p className={`text-xs ${isLight ? "text-slate-600" : "text-slate-400"}`}>
+              {token.contractAddress.slice(0, 8)}...
+            </p>
           </div>
         </div>
         <div className="text-right">
-          <p className="text-lg font-semibold text-white">{Number(humanBalance).toFixed(4)}</p>
-          <p className="text-xs text-slate-400">token balance</p>
+          <p className="text-lg font-semibold">{Number(humanBalance).toFixed(4)}</p>
+          <p className={`text-xs ${isLight ? "text-slate-600" : "text-slate-400"}`}>token balance</p>
         </div>
       </div>
     );
@@ -185,24 +194,40 @@ export default function WalletPage() {
   }, [tokens]);
 
   return (
-    <div className="space-y-6 text-white">
-      <div className="glass-panel border border-white/10 bg-gradient-to-r from-slate-900 via-slate-900/70 to-slate-950 px-6 py-5">
+    <div className={`space-y-6 ${isLight ? "text-slate-900" : "text-white"}`}>
+      <div
+        className={`glass-panel border px-6 py-5 ${
+          isLight
+            ? "border-slate-200/80 bg-gradient-to-r from-white via-white to-slate-100"
+            : "border-white/10 bg-gradient-to-r from-slate-900 via-slate-900/70 to-slate-950"
+        }`}
+      >
         <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div>
-            <p className="text-xs uppercase tracking-[0.3em] text-cyan-200/70">Wallet dashboard</p>
+            <p className={`text-xs uppercase tracking-[0.3em] ${isLight ? "text-cyan-700" : "text-cyan-200/70"}`}>
+              Wallet dashboard
+            </p>
             <h1 className="text-3xl font-bold">Multi-chain vault</h1>
-            <p className="mt-1 text-sm text-slate-300">Brze akcije i KPIs u dvokolonskom rasporedu.</p>
+            <p className={`mt-1 text-sm ${isLight ? "text-slate-600" : "text-slate-300"}`}>
+              Quick actions and KPIs in a two-column layout.
+            </p>
           </div>
           <div className="flex flex-wrap gap-3 text-sm font-semibold">
             <button
               onClick={connectWallet}
-              className="rounded-full border border-orange-400/50 bg-orange-500/15 px-4 py-2 text-orange-100 shadow-inner shadow-black/30"
+              className={`rounded-full border px-4 py-2 ${
+                isLight
+                  ? "border-orange-200 bg-orange-50 text-orange-700 shadow"
+                  : "border-orange-400/50 bg-orange-500/15 text-orange-100 shadow-inner shadow-black/30"
+              }`}
             >
               Connect MetaMask
             </button>
             <button
               onClick={handleConfirmAddress}
-              className="rounded-full border border-white/10 bg-white/10 px-4 py-2 text-slate-100"
+              className={`rounded-full border px-4 py-2 ${
+                isLight ? "border-slate-200 bg-white text-slate-800" : "border-white/10 bg-white/10 text-slate-100"
+              }`}
             >
               Confirm address
             </button>
@@ -210,11 +235,19 @@ export default function WalletPage() {
         </div>
 
         <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center">
-          <div className="flex flex-1 items-center gap-3 rounded-2xl border border-white/10 bg-slate-900/70 px-4 py-3 shadow-inner shadow-black/30">
+          <div
+            className={`flex flex-1 items-center gap-3 rounded-2xl border px-4 py-3 shadow-inner ${
+              isLight
+                ? "border-slate-200 bg-white text-slate-900 shadow-slate-200/60"
+                : "border-white/10 bg-slate-900/70 text-white shadow-black/30"
+            }`}
+          >
             <input
               type="text"
               placeholder="Paste any wallet address"
-              className="w-full bg-transparent text-sm text-white placeholder:text-slate-500 focus:outline-none"
+              className={`w-full bg-transparent text-sm placeholder:text-slate-500 focus:outline-none ${
+                isLight ? "text-slate-900" : "text-white"
+              }`}
               value={inputAddress}
               onChange={(e) => setInputAddress(e.target.value)}
               onKeyDown={(e) => {
@@ -230,28 +263,44 @@ export default function WalletPage() {
           </button>
         </div>
 
-        {walletError && <p className="mt-2 text-sm text-rose-300">{walletError}</p>}
+        {walletError && (
+          <p className={`mt-2 text-sm ${isLight ? "text-rose-600" : "text-rose-300"}`}>{walletError}</p>
+        )}
 
         {address && (
           <div className="mt-4 grid gap-4 md:grid-cols-2">
             <Card variant="glass">
-              <p className="text-xs uppercase tracking-wide text-slate-400">Active address</p>
+              <p className={`text-xs uppercase tracking-wide ${isLight ? "text-slate-500" : "text-slate-400"}`}>
+                Active address
+              </p>
               <p className="mt-1 break-all text-lg font-semibold">{address}</p>
               {balance !== null && (
                 <>
-                  <p className="mt-3 text-2xl font-bold text-emerald-300">{balance} ETH</p>
-                  <p className="text-xs text-slate-400">≈ {formatCurrency(balance, currency)} (display currency)</p>
+                  <p className={`mt-3 text-2xl font-bold ${isLight ? "text-emerald-600" : "text-emerald-300"}`}>
+                    {balance} ETH
+                  </p>
+                  <p className={`text-xs ${isLight ? "text-slate-600" : "text-slate-400"}`}>
+                    ≈ {formatCurrency(balance, currency)} (display currency)
+                  </p>
                 </>
               )}
-              <p className="mt-1 text-xs text-slate-400">Auto-saves last address</p>
+              <p className={`mt-1 text-xs ${isLight ? "text-slate-500" : "text-slate-400"}`}>Auto-saves last address</p>
             </Card>
             <Card variant="glass" className="flex items-center justify-between">
               <div>
-                <p className="text-xs uppercase tracking-wide text-slate-400">Sync status</p>
-                <p className="mt-1 text-lg font-semibold text-white">{loading ? "Refreshing..." : "Live"}</p>
-                <p className="text-xs text-slate-400">Parallel fetching with graceful fallbacks.</p>
+                <p className={`text-xs uppercase tracking-wide ${isLight ? "text-slate-500" : "text-slate-400"}`}>
+                  Sync status
+                </p>
+                <p className="mt-1 text-lg font-semibold">{loading ? "Refreshing..." : "Live"}</p>
+                <p className={`text-xs ${isLight ? "text-slate-600" : "text-slate-400"}`}>
+                  Parallel fetching with graceful fallbacks.
+                </p>
               </div>
-              <div className="h-16 w-16 rounded-full border border-cyan-400/40 bg-cyan-500/10" />
+              <div
+                className={`h-16 w-16 rounded-full border ${
+                  isLight ? "border-cyan-200 bg-cyan-50" : "border-cyan-400/40 bg-cyan-500/10"
+                }`}
+              />
             </Card>
           </div>
         )}
@@ -261,17 +310,31 @@ export default function WalletPage() {
         <Card className="lg:col-span-2">
           <div className="flex items-center justify-between">
             <h2 className="text-xl font-semibold">Tokens</h2>
-            <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-slate-300">Top 20</span>
+            <span
+              className={`rounded-full border px-3 py-1 text-xs ${
+                isLight
+                  ? "border-slate-200 bg-white text-slate-700"
+                  : "border-white/10 bg-white/5 text-slate-300"
+              }`}
+            >
+              Top 20
+            </span>
           </div>
           {tokens.length === 0 && (
-            <p className="mt-3 text-sm text-slate-400 italic">No tokens detected for this address.</p>
+            <p className={`mt-3 text-sm italic ${isLight ? "text-slate-500" : "text-slate-400"}`}>
+              No tokens detected for this address.
+            </p>
           )}
 
           <div className="mt-4 space-y-3">
             {tokens.map((t) => (
-              <Card key={t.contractAddress} variant="outlined" className="border-white/5 bg-slate-950/50">
-                <TokenDisplay token={t} />
-                <div className="mt-3 h-2 rounded-full bg-white/5">
+              <Card
+                key={t.contractAddress}
+                variant="outlined"
+                className={isLight ? "border-slate-200 bg-white" : "border-white/5 bg-slate-950/50"}
+              >
+                <TokenDisplay token={t} isLight={isLight} />
+                <div className={`mt-3 h-2 rounded-full ${isLight ? "bg-slate-100" : "bg-white/5"}`}>
                   <div
                     className="h-full rounded-full bg-gradient-to-r from-cyan-400 to-blue-600"
                     style={{
@@ -292,21 +355,26 @@ export default function WalletPage() {
 
         <Card>
           <h2 className="text-xl font-semibold">Portfolio mix</h2>
-          <p className="mt-2 text-sm text-slate-400">
-            Brz pregled udela tokena u ukupnom balansu. Prikazano proporcionalno preko progress barova.
+          <p className={`mt-2 text-sm ${isLight ? "text-slate-600" : "text-slate-400"}`}>
+            Quick glance at token share across the total balance, shown proportionally via progress bars.
           </p>
           <div className="mt-4 space-y-3">
             {tokens.slice(0, 5).map((t) => (
-              <div key={t.contractAddress} className="rounded-xl border border-white/5 bg-white/5 p-3">
-                <div className="flex items-center justify-between text-sm">
-                  <span className="font-semibold text-white">{t.symbol || t.contractAddress.slice(0, 4)}</span>
-                  <span className="text-slate-300">
+              <div
+                key={t.contractAddress}
+                className={`rounded-xl border p-3 ${
+                  isLight ? "border-slate-200 bg-white" : "border-white/5 bg-white/5"
+                }`}
+              >
+                <div className={`flex items-center justify-between text-sm ${isLight ? "text-slate-800" : "text-white"}`}>
+                  <span className="font-semibold">{t.symbol || t.contractAddress.slice(0, 4)}</span>
+                  <span className={isLight ? "text-slate-600" : "text-slate-300"}>
                     {tokenShare.total > 0
                       ? `${((Number(t.tokenBalance || 0) / tokenShare.total) * 100).toFixed(2)}%`
                       : "-"}
                   </span>
                 </div>
-                <div className="mt-2 h-2 rounded-full bg-slate-900">
+                <div className={`mt-2 h-2 rounded-full ${isLight ? "bg-slate-200" : "bg-slate-900"}`}>
                   <div
                     className="h-full rounded-full bg-gradient-to-r from-emerald-400 to-cyan-400"
                     style={{
@@ -329,17 +397,37 @@ export default function WalletPage() {
         <div className="flex items-center justify-between">
           <div>
             <h2 className="text-xl font-semibold">Transactions</h2>
-            <p className="text-sm text-slate-400">Latest activity with quick tags.</p>
+            <p className={`text-sm ${isLight ? "text-slate-600" : "text-slate-400"}`}>Latest activity with quick tags.</p>
           </div>
           <div className="flex gap-2 text-xs font-semibold">
-            <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-slate-200">All</span>
-            <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-slate-200">Received</span>
-            <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-slate-200">Sent</span>
+            <span
+              className={`rounded-full border px-3 py-1 ${
+                isLight ? "border-slate-200 bg-white text-slate-700" : "border-white/10 bg-white/5 text-slate-200"
+              }`}
+            >
+              All
+            </span>
+            <span
+              className={`rounded-full border px-3 py-1 ${
+                isLight ? "border-slate-200 bg-white text-slate-700" : "border-white/10 bg-white/5 text-slate-200"
+              }`}
+            >
+              Received
+            </span>
+            <span
+              className={`rounded-full border px-3 py-1 ${
+                isLight ? "border-slate-200 bg-white text-slate-700" : "border-white/10 bg-white/5 text-slate-200"
+              }`}
+            >
+              Sent
+            </span>
           </div>
         </div>
 
         {txs.length === 0 && (
-          <p className="mt-3 text-sm text-slate-400 italic">No transactions found for this address.</p>
+          <p className={`mt-3 text-sm italic ${isLight ? "text-slate-500" : "text-slate-400"}`}>
+            No transactions found for this address.
+          </p>
         )}
 
         <div className="mt-4 space-y-3">
@@ -347,13 +435,23 @@ export default function WalletPage() {
             txs.map((tx) => (
               <div
                 key={tx.hash}
-                className="rounded-2xl border border-white/10 bg-slate-950/60 p-3 shadow-inner shadow-black/30"
+                className={`rounded-2xl border p-3 shadow-inner ${
+                  isLight ? "border-slate-200 bg-white" : "border-white/10 bg-slate-950/60"
+                }`}
               >
-                <p className="text-sm font-semibold text-white">{tx.hash.slice(0, 12)}...</p>
-                <p className="text-xs text-slate-400">Block: {tx.blockNumber}</p>
+                <p className="text-sm font-semibold">{tx.hash.slice(0, 12)}...</p>
+                <p className={isLight ? "text-xs text-slate-500" : "text-xs text-slate-400"}>Block: {tx.blockNumber}</p>
                 <div className="mt-2 flex items-center justify-between text-sm">
-                  <span className="rounded-full bg-emerald-500/10 px-3 py-1 text-emerald-200">{tx.txreceipt_status === "1" ? "Confirmed" : "Pending"}</span>
-                  <span className="font-semibold text-white">{tx.value / 1e18} ETH</span>
+                  <span
+                    className={`rounded-full px-3 py-1 ${
+                      isLight
+                        ? "bg-emerald-50 text-emerald-700"
+                        : "bg-emerald-500/10 text-emerald-200"
+                    }`}
+                  >
+                    {tx.txreceipt_status === "1" ? "Confirmed" : "Pending"}
+                  </span>
+                  <span className="font-semibold">{tx.value / 1e18} ETH</span>
                 </div>
               </div>
             ))}

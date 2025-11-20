@@ -4,6 +4,7 @@ import axios from "axios";
 import { useSettings } from "../../context/SettingsContext";
 import { formatCurrency } from "../../utils/formatters";
 import Toast from "../../components/Toast";
+import { useAlerts } from "../../context/AlertContext";
 import {
   AreaChart,
   Area,
@@ -27,6 +28,7 @@ const ALERT_STORAGE_KEY = "priceAlerts";
 export default function CoinDetailPage() {
   const { id } = useParams(); // npr. "bitcoin"
   const { chartRange, currency, theme } = useSettings();
+  const { evaluatePriceAlerts } = useAlerts();
   const [coin, setCoin] = useState(null);
   const [chartData, setChartData] = useState([]);
   const [range, setRange] = useState(chartRange || "7d");
@@ -84,6 +86,11 @@ export default function CoinDetailPage() {
 
     loadCoin();
   }, [id]);
+
+  useEffect(() => {
+    if (!coin) return;
+    evaluatePriceAlerts([coin], currency);
+  }, [coin, currency, evaluatePriceAlerts]);
 
   // chart podaci direktno sa CoinGecko market_chart
   useEffect(() => {
@@ -382,18 +389,18 @@ export default function CoinDetailPage() {
                 <button
                   key={r}
                   onClick={() => setRange(r)}
-                  className={`rounded-full px-4 py-2 transition ${
-                    range === r
-                      ? isLight
-                        ? "bg-slate-900 text-white shadow"
-                        : "bg-white text-slate-900 shadow-sm shadow-cyan-500/30"
-                      : isLight
-                      ? "text-slate-600 hover:text-slate-900"
-                      : "text-slate-200 hover:text-white"
-                  }`}
-                >
-                  {r.toUpperCase()}
-                </button>
+                className={`rounded-full px-4 py-2 transition ${
+                  range === r
+                    ? isLight
+                      ? "bg-cyan-100 text-cyan-900 shadow-sm shadow-cyan-300/50"
+                      : "bg-white text-slate-900 shadow-sm shadow-cyan-500/30"
+                    : isLight
+                    ? "text-slate-600 hover:text-cyan-800"
+                    : "text-slate-200 hover:text-white"
+                }`}
+              >
+                {r.toUpperCase()}
+              </button>
               ))}
             </div>
           </div>

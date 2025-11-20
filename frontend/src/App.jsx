@@ -1,14 +1,17 @@
 import './App.css'
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { BrowserRouter, Routes, Route, Link, NavLink } from "react-router-dom";
 import MarketPage from "./modules/market/MarketPage";
 import WalletPage from "./modules/wallet/WalletPage.jsx";
 import SettingsPage from "./modules/settings/SettingsPage.jsx";
 import CoinDetailPage from "./modules/market/CoinDetailPage";
 import { SettingsProvider, useSettings } from "./context/SettingsContext";
+import { AlertProvider, useAlerts } from "./context/AlertContext";
+import Toast from "./components/Toast";
 
 function Shell() {
   const { theme } = useSettings();
+  const { notifications, dismiss } = useAlerts();
   const [mobileOpen, setMobileOpen] = useState(false);
 
   const isLight = theme === "light";
@@ -20,12 +23,21 @@ function Shell() {
     `rounded-full px-4 py-2 transition ${
       isActive
         ? isLight
-          ? "bg-slate-900 text-white shadow-md shadow-cyan-500/10"
+          ? "bg-cyan-100 text-cyan-900 shadow-sm shadow-cyan-300/40"
           : "bg-white text-slate-900 shadow-md shadow-cyan-500/20"
         : isLight
-        ? "text-slate-700 hover:text-slate-900"
+        ? "text-slate-700 hover:text-cyan-800"
         : "text-slate-200 hover:text-white"
     }`;
+
+  const navItems = useMemo(
+    () => [
+      { path: "/", label: "Market" },
+      { path: "/wallet", label: "Wallet" },
+      { path: "/settings", label: "Settings" },
+    ],
+    []
+  );
 
   return (
     <div className={`min-h-screen ${wrapperBg}`}>
@@ -80,15 +92,11 @@ function Shell() {
                 : "border-white/10 bg-white/5 text-slate-200"
             }`}
           >
-            <NavLink to="/" className={navLinkClass}>
-              Market
-            </NavLink>
-            <NavLink to="/wallet" className={navLinkClass}>
-              Wallet
-            </NavLink>
-            <NavLink to="/settings" className={navLinkClass}>
-              Settings
-            </NavLink>
+            {navItems.map((item) => (
+              <NavLink key={item.path} to={item.path} className={navLinkClass}>
+                {item.label}
+              </NavLink>
+            ))}
           </nav>
 
           <div className="flex items-center gap-3">
@@ -127,16 +135,16 @@ function Shell() {
             }`}
           >
             <div className="mx-auto flex max-w-6xl flex-col gap-2 px-4 pb-4">
-              {["/", "/wallet", "/settings"].map((path) => (
+              {navItems.map((item) => (
                 <NavLink
-                  key={path}
-                  to={path}
+                  key={item.path}
+                  to={item.path}
                   onClick={() => setMobileOpen(false)}
                   className={({ isActive }) =>
                     `rounded-xl px-4 py-3 text-sm font-semibold transition ${
                       isActive
                         ? isLight
-                          ? "bg-slate-900 text-white"
+                          ? "bg-cyan-100 text-cyan-900 shadow-sm shadow-cyan-200"
                           : "bg-white text-slate-900"
                         : isLight
                         ? "bg-white/80 text-slate-700 hover:bg-slate-100"
@@ -144,7 +152,7 @@ function Shell() {
                     }`
                   }
                 >
-                  {path === "/" ? "Market" : path === "/wallet" ? "Wallet" : "Settings"}
+                  {item.label}
                 </NavLink>
               ))}
             </div>
@@ -160,6 +168,22 @@ function Shell() {
           <Route path="/settings" element={<SettingsPage />} />
         </Routes>
       </main>
+
+      <div className="pointer-events-none fixed right-2 top-2 z-50 flex flex-col gap-3 sm:right-6 sm:top-6">
+        {notifications.map((toast, idx) => (
+          <Toast
+            key={toast.id}
+            open
+            message={toast.message}
+            variant={toast.variant}
+            onClose={() => dismiss(toast.id)}
+            position="top-right"
+            offsetIndex={idx * 10}
+            autoHide={toast.autoHide}
+            duration={toast.duration}
+          />
+        ))}
+      </div>
     </div>
   );
 }
@@ -168,7 +192,9 @@ function App() {
   return (
     <BrowserRouter>
       <SettingsProvider>
-        <Shell />
+        <AlertProvider>
+          <Shell />
+        </AlertProvider>
       </SettingsProvider>
     </BrowserRouter>
   );

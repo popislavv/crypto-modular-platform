@@ -3,6 +3,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useSettings } from "../../context/SettingsContext";
 import { formatCompact, formatCurrency } from "../../utils/formatters";
+import { useAlerts } from "../../context/AlertContext";
 
 export default function MarketPage() {
   const [coins, setCoins] = useState([]);
@@ -14,6 +15,7 @@ export default function MarketPage() {
 
   const navigate = useNavigate();
   const { currency, theme } = useSettings();
+  const { evaluatePriceAlerts } = useAlerts();
   const isLight = theme === "light";
 
   async function loadData() {
@@ -37,6 +39,11 @@ export default function MarketPage() {
   useEffect(() => {
     loadData();
   }, []);
+
+  useEffect(() => {
+    if (coins.length === 0) return;
+    evaluatePriceAlerts(coins, currency);
+  }, [coins, currency, evaluatePriceAlerts]);
 
   // filtriranje po search + top10/all
   useEffect(() => {
@@ -203,23 +210,23 @@ export default function MarketPage() {
                 : "border-white/10 bg-slate-900/70 shadow-black/30"
             }`}
           >
-            {[
-              { key: "top10", label: "Top 10" },
-              { key: "all", label: "All" },
-            ].map((option) => (
-              <button
-                key={option.key}
-                onClick={() => setViewMode(option.key)}
-                className={`rounded-full px-4 py-2 transition ${
-                  viewMode === option.key
-                    ? isLight
-                      ? "bg-slate-900 text-white shadow-sm shadow-slate-400/30"
-                      : "bg-white text-slate-900 shadow-sm shadow-cyan-500/30"
-                    : isLight
-                    ? "text-slate-700 hover:text-slate-900"
-                    : "text-slate-200 hover:text-white"
-                }`}
-              >
+              {[
+                { key: "top10", label: "Top 10" },
+                { key: "all", label: "All" },
+              ].map((option) => (
+                <button
+                  key={option.key}
+                  onClick={() => setViewMode(option.key)}
+                  className={`rounded-full px-4 py-2 transition ${
+                    viewMode === option.key
+                      ? isLight
+                        ? "bg-cyan-100 text-cyan-900 shadow-sm shadow-cyan-300/40"
+                        : "bg-white text-slate-900 shadow-sm shadow-cyan-500/30"
+                      : isLight
+                      ? "text-slate-700 hover:text-cyan-800"
+                      : "text-slate-200 hover:text-white"
+                  }`}
+                >
                 {option.label}
               </button>
             ))}

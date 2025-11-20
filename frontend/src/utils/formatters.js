@@ -6,8 +6,8 @@ const currencySymbols = {
 
 const FX_RATES_FROM_USD = {
   USD: 1,
-  EUR: 0.92,
-  BAM: 1.8,
+  EUR: 0.91,
+  BAM: 1.7,
 };
 
 export function convertFromUsd(value, currency = "USD") {

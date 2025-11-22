@@ -24,6 +24,7 @@ const RANGE_TO_DAYS = {
   "1y": 365,
 };
 const ALERT_STORAGE_KEY = "priceAlerts";
+const ALERT_TRIGGER_STATE_KEY = "priceAlertTriggeredState";
 
 export default function CoinDetailPage() {
   const { id } = useParams(); // npr. "bitcoin"
@@ -141,6 +142,20 @@ export default function CoinDetailPage() {
   const stats = useMemo(() => {
     if (!coin?.market_data) return [];
     const md = coin.market_data;
+    const priceChange = Number(md.price_change_percentage_24h);
+    const priceChangeTone =
+      Number.isFinite(priceChange) && priceChange !== 0
+        ? priceChange > 0
+          ? isLight
+            ? "text-emerald-600"
+            : "text-emerald-300"
+          : isLight
+          ? "text-rose-600"
+          : "text-rose-300"
+        : isLight
+        ? "text-slate-700"
+        : "text-slate-200";
+
     return [
       {
         label: "Market Cap",
@@ -149,23 +164,14 @@ export default function CoinDetailPage() {
       },
       {
         label: "24h Change",
-        value: `${md.price_change_percentage_24h.toFixed(2)}%`,
-        tone:
-          md.price_change_percentage_24h > 0
-            ? isLight
-              ? "text-emerald-600"
-              : "text-emerald-300"
-            : md.price_change_percentage_24h < 0
-            ? isLight
-              ? "text-rose-600"
-              : "text-rose-300"
-            : isLight
-            ? "text-slate-700"
-            : "text-slate-200",
+        value: Number.isFinite(priceChange) ? `${priceChange.toFixed(2)}%` : "-",
+        tone: priceChangeTone,
       },
       {
         label: "Circulating Supply",
-        value: `${md.circulating_supply.toLocaleString()} ${coin.symbol.toUpperCase()}`,
+        value: md.circulating_supply
+          ? `${md.circulating_supply.toLocaleString()} ${coin.symbol.toUpperCase()}`
+          : "-",
         tone: isLight ? "text-slate-700" : "text-slate-100",
       },
       {
@@ -195,6 +201,17 @@ export default function CoinDetailPage() {
 
     parsed[id] = { direction: alertDirection, threshold: thresholdValue };
     localStorage.setItem(ALERT_STORAGE_KEY, JSON.stringify(parsed));
+    try {
+      const triggeredRaw = localStorage.getItem(ALERT_TRIGGER_STATE_KEY);
+      const triggeredState = triggeredRaw ? JSON.parse(triggeredRaw) : {};
+      const key = `${id}-${alertDirection}-${thresholdValue}`;
+      if (triggeredState[key]) {
+        delete triggeredState[key];
+        localStorage.setItem(ALERT_TRIGGER_STATE_KEY, JSON.stringify(triggeredState));
+      }
+    } catch (e) {
+      // ignore cleanup failures
+    }
     setToast({ message: "Alert preference saved.", variant: "success" });
   }
 

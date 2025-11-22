@@ -209,6 +209,12 @@ export default function CoinDetailPage() {
         delete triggeredState[key];
         localStorage.setItem(ALERT_TRIGGER_STATE_KEY, JSON.stringify(triggeredState));
       }
+      const dismissedRaw = localStorage.getItem("priceAlertDismissedState");
+      const dismissedState = dismissedRaw ? JSON.parse(dismissedRaw) : {};
+      if (dismissedState[key]) {
+        delete dismissedState[key];
+        localStorage.setItem("priceAlertDismissedState", JSON.stringify(dismissedState));
+      }
     } catch (e) {
       // ignore cleanup failures
     }

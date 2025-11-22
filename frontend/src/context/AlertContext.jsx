@@ -4,12 +4,21 @@ import { formatCurrency } from "../utils/formatters";
 const AlertContext = createContext(null);
 const ALERT_STORAGE_KEY = "priceAlerts";
 const ALERT_TRIGGER_STATE_KEY = "priceAlertTriggeredState";
+const ALERT_DISMISSED_STATE_KEY = "priceAlertDismissedState";
 
 export function AlertProvider({ children }) {
   const [notifications, setNotifications] = useState([]);
   const [triggeredAlerts, setTriggeredAlerts] = useState(() => {
     try {
       const raw = localStorage.getItem(ALERT_TRIGGER_STATE_KEY);
+      return raw ? JSON.parse(raw) : {};
+    } catch (e) {
+      return {};
+    }
+  });
+  const [dismissedAlerts, setDismissedAlerts] = useState(() => {
+    try {
+      const raw = localStorage.getItem(ALERT_DISMISSED_STATE_KEY);
       return raw ? JSON.parse(raw) : {};
     } catch (e) {
       return {};
@@ -24,8 +33,22 @@ export function AlertProvider({ children }) {
     }
   }, [triggeredAlerts]);
 
+  useEffect(() => {
+    try {
+      localStorage.setItem(ALERT_DISMISSED_STATE_KEY, JSON.stringify(dismissedAlerts));
+    } catch (e) {
+      // noop
+    }
+  }, [dismissedAlerts]);
+
   const dismiss = useCallback((id) => {
-    setNotifications((prev) => prev.filter((n) => n.id !== id));
+    setNotifications((prev) => {
+      const target = prev.find((n) => n.id === id);
+      if (target?.alertKey) {
+        setDismissedAlerts((state) => ({ ...state, [target.alertKey]: true }));
+      }
+      return prev.filter((n) => n.id !== id);
+    });
   }, []);
 
   const pushNotification = useCallback((notification) => {
@@ -57,23 +80,29 @@ export function AlertProvider({ children }) {
         if (!alertConfig || !priceUsd) return;
 
         const key = `${coin.id}-${alertConfig.direction}-${alertConfig.threshold}`;
+        const thresholdValue = Number(alertConfig.threshold);
         const conditionMet =
-          alertConfig.direction === "above"
-            ? priceUsd >= alertConfig.threshold
-            : priceUsd <= alertConfig.threshold;
+          alertConfig.direction === "above" ? priceUsd >= thresholdValue : priceUsd <= thresholdValue;
         const wasMet = !!nextTriggered[key];
+        const wasDismissed = !!dismissedAlerts[key];
 
-        if (conditionMet && !wasMet) {
+        if (conditionMet && !wasMet && !wasDismissed) {
           const displayThreshold = formatCurrency(alertConfig.threshold, currency);
           pushNotification({
             message: `Alert: ${coin.name || coin.symbol || ""} price crossed ${displayThreshold} (${alertConfig.direction})`,
             variant: "warning",
             autoHide: false,
+            alertKey: key,
           });
           nextTriggered[key] = true;
           changed = true;
-        } else if (!conditionMet && wasMet) {
-          delete nextTriggered[key];
+        } else if (!conditionMet && (wasMet || wasDismissed)) {
+          if (wasMet) delete nextTriggered[key];
+          if (wasDismissed) {
+            const nextDismissed = { ...dismissedAlerts };
+            delete nextDismissed[key];
+            setDismissedAlerts(nextDismissed);
+          }
           changed = true;
         }
       });
@@ -82,7 +111,7 @@ export function AlertProvider({ children }) {
         setTriggeredAlerts(nextTriggered);
       }
     },
-    [pushNotification, triggeredAlerts]
+    [dismissedAlerts, pushNotification, triggeredAlerts]
   );
 
   const value = useMemo(

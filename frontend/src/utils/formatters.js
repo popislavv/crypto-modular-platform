@@ -6,7 +6,7 @@ const currencySymbols = {
 
 const FX_RATES_FROM_USD = {
   USD: 1,
-  EUR: 0.92,
+  EUR: 0.87,
   BAM: 1.7,
 };
 

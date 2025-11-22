@@ -169,7 +169,10 @@ function Shell() {
         </Routes>
       </main>
 
-      <div className="pointer-events-none fixed right-2 top-2 z-50 flex flex-col gap-3 sm:right-6 sm:top-6">
+      <div
+        className="pointer-events-none fixed right-2 top-2 z-50 flex w-auto flex-col gap-3 sm:right-6 sm:top-6"
+        aria-live="polite"
+      >
         {notifications.map((toast, idx) => (
           <Toast
             key={toast.id}

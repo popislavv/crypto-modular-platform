@@ -38,6 +38,8 @@ export default function SettingsPage() {
     setTheme(selectedTheme);
     setLanguage(selectedLanguage);
     setToast({ message: t("settings.saved"), variant: "success" });
+    localStorage.setItem("lang", selectedLanguage);
+    window.location.reload();
   }
 
   useEffect(() => {

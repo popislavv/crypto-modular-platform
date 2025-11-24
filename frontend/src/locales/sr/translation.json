@@ -1,0 +1,180 @@
+{
+  "nav": {
+    "market": "Tržište",
+    "wallet": "Novčanik",
+    "settings": "Podešavanja",
+    "connectWallet": "Poveži novčanik",
+    "logoTagline": "Kripto",
+    "logoTitle": "Modularna platforma",
+    "toggleMenu": "Otvori/zatvori meni"
+  },
+  "common": {
+    "loading": "Učitavanje...",
+    "error": "Došlo je do greške.",
+    "searchPlaceholder": "Pretraga po imenu ili simbolu...",
+    "dismiss": "Zatvori obaveštenje",
+    "backToMarket": "Nazad na tržište",
+    "range": {
+      "24h": "24h",
+      "7d": "7d",
+      "30d": "30d",
+      "1y": "1g"
+    }
+  },
+  "market": {
+    "heroTag": "Aktivna tržišta",
+    "heroTitle": "Pregled kripto tržišta",
+    "heroSubtitle": "Napredni raspored kartica sa KPI čipovima, segmentima i pro tabelom kao na modernim trejding terminalima.",
+    "badgeRealtime": "U realnom vremenu",
+    "badgeQuotes": "{{currency}} cene",
+    "badgeProTable": "Pro tabela",
+    "metrics": {
+      "totalMarketCap": "Ukupna tržišna kapitalizacija",
+      "totalVolume": "24h obim",
+      "btcDominance": "BTC dominacija",
+      "ethDominance": "ETH dominacija"
+    },
+    "error": "Trenutno ne možemo da učitamo tržišne podatke. Pokušaj ponovo uskoro.",
+    "loading": "Učitavanje tržišta...",
+    "segment": {
+      "top10": "Top 10",
+      "all": "Sve"
+    },
+    "labels": {
+      "marketCap": "Tržišna kapitalizacija"
+    },
+    "table": {
+      "title": "Pro tržišna tabela",
+      "hint": "Skroluj za ceo prikaz",
+      "headers": {
+        "rank": "#",
+        "name": "Naziv",
+        "price": "Cena",
+        "change": "24h %",
+        "marketCap": "Tržišna kapitalizacija",
+        "volume": "Obim 24h"
+      },
+      "empty": "Nema podataka za prikaz."
+    }
+  },
+  "coin": {
+    "loading": "Učitavanje podataka o coinu...",
+    "error": "Nije moguće učitati podatke za ovaj coin.",
+    "chartLoading": "Učitavanje grafika...",
+    "chartError": "Grafikon trenutno ne može da se učita.",
+    "noChart": "Nema dostupnih podataka za grafikon.",
+    "badges": {
+      "verified": "Provereni tržišni podaci",
+      "spot": "Spot parovi",
+      "onchain": "On-chain"
+    },
+    "stats": {
+      "marketCap": "Tržišna kapitalizacija",
+      "change24h": "Promena 24h",
+      "supply": "Circulating supply",
+      "volume24h": "Obim 24h"
+    },
+    "priceAction": "Kretanje cene",
+    "alerts": {
+      "title": "Cenovna upozorenja",
+      "subtitle": "Sačuvaj prag i obavestićemo te kada ga živa cena probije.",
+      "directionLabel": "Smer",
+      "above": "Upozori kada cena pređe iznad",
+      "below": "Upozori kada cena padne ispod",
+      "threshold": "Prag cene (USD)",
+      "placeholder": "npr. 65000",
+      "save": "Sačuvaj upozorenje",
+      "invalid": "Unesi ispravan prag cene.",
+      "saved": "Upozorenje je sačuvano.",
+      "hit": "{{coin}} je prešao prag {{threshold}} ({{direction}})"
+    },
+    "range": "Opseg",
+    "tabs": {
+      "overview": "Pregled",
+      "markets": "Tržišta",
+      "onchain": "On-chain"
+    },
+    "tabCopy": {
+      "overview": "Pregled drži brze napomene o tržištu i supply metrikama usklađene sa karticama iznad.",
+      "markets": "Kartica Tržišta može prikazati order book ili liste berzi.",
+      "onchain": "On-chain kartica je rezervisana za mrežne metrike i tokove."
+    },
+    "dataSource": "Izvor podataka: CoinGecko API"
+  },
+  "wallet": {
+    "heroTag": "Dashboard novčanika",
+    "heroTitle": "Multichain trezor",
+    "heroSubtitle": "Brze akcije i KPI pokazatelji u dvokolonskom rasporedu.",
+    "connect": "Poveži MetaMask",
+    "confirm": "Potvrdi adresu",
+    "inputPlaceholder": "Nalepi bilo koju adresu novčanika",
+    "loadData": "Učitaj podatke",
+    "metadataError": "Metapodaci nisu dostupni",
+    "errors": {
+      "balance": "Ne možemo da učitamo stanje. Pokušaj ponovo.",
+      "tokens": "Tokeni nisu mogli da se učitaju.",
+      "transactions": "Transakcije trenutno nisu dostupne.",
+      "unexpected": "Neočekivana greška pri učitavanju novčanika.",
+      "metamask": "MetaMask nije detektovan."
+    },
+    "activeAddress": "Aktivna adresa",
+    "balanceFiat": "≈ {{value}} (valuta prikaza)",
+    "autoSave": "Automatski čuva poslednju adresu",
+    "syncStatus": "Status sinhronizacije",
+    "status": {
+      "refreshing": "Osvežavanje...",
+      "live": "Aktivno"
+    },
+    "syncCopy": "Paralelno učitavanje sa gracioznim fallback-om.",
+    "tokensTitle": "Tokeni",
+    "tokensBadge": "Top 20",
+    "tokensEmpty": "Nema pronađenih tokena za ovu adresu.",
+    "tokenBalance": "stanje tokena",
+    "portfolioTitle": "Portfolio mix",
+    "portfolioCopy": "Brzi pregled udela tokena u ukupnom balansu, prikazan proporcionalno kroz progress bar-ove.",
+    "portfolioEmpty": "Dodaj adresu da vidiš sastav.",
+    "transactionsTitle": "Transakcije",
+    "transactionsCopy": "Najnovija aktivnost sa brzim oznakama.",
+    "filters": {
+      "all": "Sve",
+      "received": "Primljeno",
+      "sent": "Poslato"
+    },
+    "transactionsEmpty": "Nema pronađenih transakcija za ovu adresu.",
+    "block": "Blok:",
+    "statuses": {
+      "confirmed": "Potvrđeno",
+      "pending": "Na čekanju"
+    },
+    "labels": {
+      "walletDashboard": "Dashboard novčanika",
+      "topTwenty": "Top 20"
+    }
+  },
+  "alerts": {
+    "toast": "Upozorenje: cena za {{coin}} je prešla {{threshold}} ({{direction}})",
+    "above": "iznad",
+    "below": "ispod"
+  },
+  "settings": {
+    "title": "Podešavanja",
+    "subtitle": "Podesi osvežavanje tržišta, podrazumevane grafikone, valutu, temu i jezik.",
+    "refreshIntervalLabel": "Interval automatskog osvežavanja (sekunde)",
+    "refreshIntervalHelp": "Minimum 30s zbog CoinGecko ograničenja. Čuva se kao broj radi tačnog poređenja.",
+    "chartRange": "Podrazumevani opseg grafika",
+    "chartRangeHelp": "Postavi početni vremenski okvir za sve grafikone.",
+    "currency": "Podrazumevana valuta",
+    "currencyHelp": "Izaberi valutu za prikaz kroz tržište, coine i novčanik.",
+    "theme": "Tema",
+    "themeHelp": "Brzo prebaci izgled aplikacije u svetli režim.",
+    "dark": "Tamna",
+    "light": "Svetla",
+    "save": "Sačuvaj podešavanja",
+    "intervalWarning": "Minimalni interval je 30 sekundi (CoinGecko ograničenje).",
+    "saved": "Podešavanja su uspešno sačuvana.",
+    "language": "Jezik",
+    "langEnglish": "Engleski",
+    "langSerbian": "Srpski",
+    "languageHelp": "Promeni jezik interfejsa i zapamti izbor."
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "nav": {
+    "market": "Tržište",
+    "wallet": "Novčanik",
+    "settings": "Podešavanja",
+    "connectWallet": "Poveži novčanik",
+    "logoTagline": "Kripto",
+    "logoTitle": "Modularna platforma"
+  },
+  "settings": {
+    "title": "Podešavanja",
+    "subtitle": "Podesi osvežavanje tržišta, podrazumevane grafikone, valutu, temu i jezik.",
+    "refreshIntervalLabel": "Interval automatskog osvežavanja (sekunde)",
+    "refreshIntervalHelp": "Minimum 30s zbog CoinGecko ograničenja. Čuva se kao broj radi tačnog poređenja.",
+    "chartRange": "Podrazumevani opseg grafika",
+    "chartRangeHelp": "Postavi početni vremenski okvir za sve grafikone.",
+    "currency": "Podrazumevana valuta",
+    "currencyHelp": "Izaberi valutu za prikaz kroz tržište, coine i novčanik.",
+    "theme": "Tema",
+    "themeHelp": "Brzo prebaci izgled aplikacije u svetli režim.",
+    "dark": "Tamna",
+    "light": "Svetla",
+    "save": "Sačuvaj podešavanja",
+    "intervalWarning": "Minimalni interval je 30 sekundi (CoinGecko ograničenje).",
+    "saved": "Podešavanja su uspešno sačuvana.",
+    "language": "Jezik",
+    "langEnglish": "Engleski",
+    "langSerbian": "Srpski",
+    "languageHelp": "Promeni jezik interfejsa i zapamti izbor."
+  }
+}

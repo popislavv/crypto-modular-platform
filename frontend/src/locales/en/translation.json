@@ -1,0 +1,31 @@
+{
+  "nav": {
+    "market": "Market",
+    "wallet": "Wallet",
+    "settings": "Settings",
+    "connectWallet": "Connect Wallet",
+    "logoTagline": "Crypto",
+    "logoTitle": "Modular Platform"
+  },
+  "settings": {
+    "title": "Settings",
+    "subtitle": "Configure market refresh, chart defaults, currency, theme, and language.",
+    "refreshIntervalLabel": "Auto-refresh interval (seconds)",
+    "refreshIntervalHelp": "Minimum 30s due to CoinGecko rate limits. Stored as a number for correct comparisons.",
+    "chartRange": "Default chart range",
+    "chartRangeHelp": "Set the starting horizon for all coin charts.",
+    "currency": "Default currency",
+    "currencyHelp": "Choose a display currency across market, coin, and wallet views.",
+    "theme": "Theme",
+    "themeHelp": "Instantly swap the shell, cards, and inputs into light mode.",
+    "dark": "Dark",
+    "light": "Light",
+    "save": "Save preferences",
+    "intervalWarning": "Minimum refresh interval is 30 seconds (CoinGecko limit).",
+    "saved": "Settings saved successfully.",
+    "language": "Language",
+    "langEnglish": "English",
+    "langSerbian": "Serbian",
+    "languageHelp": "Switch the interface language and remember it for next time."
+  }
+}

@@ -7,4 +7,7 @@ export default defineConfig({
     react(),
     tailwindcss(), // <= DODATO OVDJE
   ],
+  resolve: {
+    dedupe: ['react', 'react-dom'],
+  },
 })

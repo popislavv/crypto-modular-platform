@@ -95,6 +95,11 @@ export default function CoinDetailPage() {
     evaluatePriceAlerts([coin], currency);
   }, [coin, currency, evaluatePriceAlerts]);
 
+  useEffect(() => {
+    if (!coin) return;
+    evaluatePriceAlerts([coin], currency);
+  }, [coin, currency, evaluatePriceAlerts]);
+
   // chart podaci direktno sa CoinGecko market_chart
   useEffect(() => {
     async function loadChart() {

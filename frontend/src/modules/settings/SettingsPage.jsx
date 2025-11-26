@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useSettings } from "../../context/SettingsContext";
 import Card from "../../components/Card";
 import Toast from "../../components/Toast";
@@ -13,17 +14,21 @@ export default function SettingsPage() {
     setCurrency,
     theme,
     setTheme,
+    language,
+    setLanguage,
   } = useSettings();
+  const { t } = useTranslation();
   const [interval, setIntervalValue] = useState(refreshInterval);
   const [range, setRange] = useState(chartRange);
   const [selectedCurrency, setSelectedCurrency] = useState(currency);
   const [selectedTheme, setSelectedTheme] = useState(theme);
+  const [selectedLanguage, setSelectedLanguage] = useState(language);
   const [toast, setToast] = useState(null);
   const isLight = theme === "light";
 
   function save() {
     if (interval < 30) {
-      setToast({ message: "Minimum refresh interval is 30 seconds (CoinGecko limit).", variant: "warning" });
+      setToast({ message: t("settings.intervalWarning"), variant: "warning" });
       return;
     }
 
@@ -31,7 +36,10 @@ export default function SettingsPage() {
     setChartRange(range);
     setCurrency(selectedCurrency);
     setTheme(selectedTheme);
-    setToast({ message: "Settings saved successfully.", variant: "success" });
+    setLanguage(selectedLanguage);
+    setToast({ message: t("settings.saved"), variant: "success" });
+    localStorage.setItem("lang", selectedLanguage);
+    window.location.reload();
   }
 
   useEffect(() => {
@@ -50,6 +58,10 @@ export default function SettingsPage() {
     setSelectedTheme(theme);
   }, [theme]);
 
+  useEffect(() => {
+    setSelectedLanguage(language);
+  }, [language]);
+
   const fieldBase = `w-full rounded-lg border p-3 text-sm shadow-inner transition focus:border-cyan-400/70 ${
     isLight
       ? "border-slate-200 bg-white text-slate-900 shadow-slate-200/50"
@@ -62,14 +74,14 @@ export default function SettingsPage() {
   return (
     <div className="page">
       <Card variant="glass" className="p-6">
-        <h1 className="mb-2 text-2xl font-bold">Settings</h1>
+        <h1 className="mb-2 text-2xl font-bold">{t("settings.title")}</h1>
         <p className={`mb-6 text-sm ${isLight ? "text-slate-600" : "text-slate-300"}`}>
-          Configure market refresh, chart defaults, currency, and theme.
+          {t("settings.subtitle")}
         </p>
 
         <div className="grid gap-6 md:grid-cols-2">
           <label className={labelTone}>
-            <span>Auto-refresh interval (seconds)</span>
+            <span>{t("settings.refreshIntervalLabel")}</span>
             <input
               type="number"
               min={0}
@@ -78,12 +90,12 @@ export default function SettingsPage() {
               className={fieldBase}
             />
             <span className={helperTone}>
-              Minimum 30s due to CoinGecko rate limits. Stored as a number for correct comparisons.
+              {t("settings.refreshIntervalHelp")}
             </span>
           </label>
 
           <label className={labelTone}>
-            <span>Default chart range</span>
+            <span>{t("settings.chartRange")}</span>
             <select
               value={range}
               onChange={(e) => setRange(e.target.value)}
@@ -95,11 +107,11 @@ export default function SettingsPage() {
                 </option>
               ))}
             </select>
-            <span className={helperTone}>Set the starting horizon for all coin charts.</span>
+            <span className={helperTone}>{t("settings.chartRangeHelp")}</span>
           </label>
 
           <label className={labelTone}>
-            <span>Default currency</span>
+            <span>{t("settings.currency")}</span>
             <select
               value={selectedCurrency}
               onChange={(e) => setSelectedCurrency(e.target.value)}
@@ -111,26 +123,45 @@ export default function SettingsPage() {
                 </option>
               ))}
             </select>
-            <span className={helperTone}>Choose a display currency across market, coin, and wallet views.</span>
+            <span className={helperTone}>{t("settings.currencyHelp")}</span>
           </label>
 
           <label className={labelTone}>
-            <span>Theme</span>
+            <span>{t("settings.theme")}</span>
             <select
               value={selectedTheme}
               onChange={(e) => setSelectedTheme(e.target.value)}
               className={fieldBase}
             >
               {[
-                { key: "dark", label: "Dark" },
-                { key: "light", label: "Light" },
+                { key: "dark", label: t("settings.dark") },
+                { key: "light", label: t("settings.light") },
               ].map((opt) => (
                 <option key={opt.key} value={opt.key} className="text-slate-900">
                   {opt.label}
                 </option>
               ))}
             </select>
-            <span className={helperTone}>Instantly swap the shell, cards, and inputs into light mode.</span>
+            <span className={helperTone}>{t("settings.themeHelp")}</span>
+          </label>
+
+          <label className={labelTone}>
+            <span>{t("settings.language")}</span>
+            <select
+              value={selectedLanguage}
+              onChange={(e) => setSelectedLanguage(e.target.value)}
+              className={fieldBase}
+            >
+              {[
+                { key: "en", label: t("settings.langEnglish") },
+                { key: "sr", label: t("settings.langSerbian") },
+              ].map((opt) => (
+                <option key={opt.key} value={opt.key} className="text-slate-900">
+                  {opt.label}
+                </option>
+              ))}
+            </select>
+            <span className={helperTone}>{t("settings.languageHelp")}</span>
           </label>
         </div>
 
@@ -138,7 +169,7 @@ export default function SettingsPage() {
           onClick={save}
           className="mt-6 w-full rounded-lg bg-gradient-to-r from-cyan-400 to-blue-600 px-4 py-3 text-sm font-semibold text-slate-950 shadow-lg shadow-cyan-500/30 transition hover:-translate-y-0.5"
         >
-          Save preferences
+          {t("settings.save")}
         </button>
       </Card>
 

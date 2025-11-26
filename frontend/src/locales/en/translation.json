@@ -1,0 +1,180 @@
+{
+  "nav": {
+    "market": "Market",
+    "wallet": "Wallet",
+    "settings": "Settings",
+    "connectWallet": "Connect Wallet",
+    "logoTagline": "Crypto",
+    "logoTitle": "Modular Platform",
+    "toggleMenu": "Toggle navigation"
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "An error occurred.",
+    "searchPlaceholder": "Search by name or symbol...",
+    "dismiss": "Dismiss notification",
+    "backToMarket": "Back to market",
+    "range": {
+      "24h": "24h",
+      "7d": "7d",
+      "30d": "30d",
+      "1y": "1y"
+    }
+  },
+  "market": {
+    "heroTag": "Live Markets",
+    "heroTitle": "Crypto Market Overview",
+    "heroSubtitle": "Premium card layout with KPI chips, segmented controls, and a pro table inspired by modern trading terminals.",
+    "badgeRealtime": "Real-time",
+    "badgeQuotes": "{{currency}} quotes",
+    "badgeProTable": "Pro table",
+    "metrics": {
+      "totalMarketCap": "Total market cap",
+      "totalVolume": "24h volume",
+      "btcDominance": "BTC dominance",
+      "ethDominance": "ETH dominance"
+    },
+    "error": "Unable to load market data right now. Please try again shortly.",
+    "loading": "Loading market data...",
+    "segment": {
+      "top10": "Top 10",
+      "all": "All"
+    },
+    "labels": {
+      "marketCap": "Market cap"
+    },
+    "table": {
+      "title": "Pro market table",
+      "hint": "Scroll for full depth",
+      "headers": {
+        "rank": "#",
+        "name": "Name",
+        "price": "Price",
+        "change": "24h %",
+        "marketCap": "Market Cap",
+        "volume": "Volume 24h"
+      },
+      "empty": "No coins to display."
+    }
+  },
+  "coin": {
+    "loading": "Loading coin data...",
+    "error": "Unable to load data for this coin.",
+    "chartLoading": "Loading chart data...",
+    "chartError": "Unable to load the chart for this coin right now.",
+    "noChart": "No chart data available.",
+    "badges": {
+      "verified": "Verified market data",
+      "spot": "Spot pairs",
+      "onchain": "On-chain"
+    },
+    "stats": {
+      "marketCap": "Market Cap",
+      "change24h": "24h Change",
+      "supply": "Circulating Supply",
+      "volume24h": "24h Volume"
+    },
+    "priceAction": "Price action",
+    "alerts": {
+      "title": "Price alerts",
+      "subtitle": "Save a threshold and we will flag when the live price crosses it.",
+      "directionLabel": "Direction",
+      "above": "Alert when price goes above",
+      "below": "Alert when price goes below",
+      "threshold": "Price threshold (USD)",
+      "placeholder": "e.g. 65000",
+      "save": "Save alert",
+      "invalid": "Enter a valid price threshold.",
+      "saved": "Alert preference saved.",
+      "hit": "{{coin}} price crossed {{threshold}} ({{direction}})"
+    },
+    "range": "Range",
+    "tabs": {
+      "overview": "Overview",
+      "markets": "Markets",
+      "onchain": "On-chain"
+    },
+    "tabCopy": {
+      "overview": "Overview keeps quick market and supply notes aligned with the stat cards above.",
+      "markets": "Markets tab can show order books or exchange listings.",
+      "onchain": "On-chain tab is reserved for network metrics and flows."
+    },
+    "dataSource": "Data source: CoinGecko API"
+  },
+  "wallet": {
+    "heroTag": "Wallet dashboard",
+    "heroTitle": "Multi-chain vault",
+    "heroSubtitle": "Quick actions and KPIs in a two-column layout.",
+    "connect": "Connect MetaMask",
+    "confirm": "Confirm address",
+    "inputPlaceholder": "Paste any wallet address",
+    "loadData": "Load data",
+    "metadataError": "Metadata unavailable",
+    "errors": {
+      "balance": "We couldn't load your balance. Please try again.",
+      "tokens": "Tokens could not be loaded.",
+      "transactions": "Transactions are unavailable right now.",
+      "unexpected": "Unexpected error while loading the wallet.",
+      "metamask": "MetaMask not detected."
+    },
+    "activeAddress": "Active address",
+    "balanceFiat": "≈ {{value}} (display currency)",
+    "autoSave": "Auto-saves last address",
+    "syncStatus": "Sync status",
+    "status": {
+      "refreshing": "Refreshing...",
+      "live": "Live"
+    },
+    "syncCopy": "Parallel fetching with graceful fallbacks.",
+    "tokensTitle": "Tokens",
+    "tokensBadge": "Top 20",
+    "tokensEmpty": "No tokens detected for this address.",
+    "tokenBalance": "token balance",
+    "portfolioTitle": "Portfolio mix",
+    "portfolioCopy": "Quick glance at token share across the total balance, shown proportionally via progress bars.",
+    "portfolioEmpty": "Add an address to see composition.",
+    "transactionsTitle": "Transactions",
+    "transactionsCopy": "Latest activity with quick tags.",
+    "filters": {
+      "all": "All",
+      "received": "Received",
+      "sent": "Sent"
+    },
+    "transactionsEmpty": "No transactions found for this address.",
+    "block": "Block:",
+    "statuses": {
+      "confirmed": "Confirmed",
+      "pending": "Pending"
+    },
+    "labels": {
+      "walletDashboard": "Wallet dashboard",
+      "topTwenty": "Top 20"
+    }
+  },
+  "alerts": {
+    "toast": "Alert: {{coin}} price crossed {{threshold}} ({{direction}})",
+    "above": "above",
+    "below": "below"
+  },
+  "settings": {
+    "title": "Settings",
+    "subtitle": "Configure market refresh, chart defaults, currency, theme, and language.",
+    "refreshIntervalLabel": "Auto-refresh interval (seconds)",
+    "refreshIntervalHelp": "Minimum 30s due to CoinGecko rate limits. Stored as a number for correct comparisons.",
+    "chartRange": "Default chart range",
+    "chartRangeHelp": "Set the starting horizon for all coin charts.",
+    "currency": "Default currency",
+    "currencyHelp": "Choose a display currency across market, coin, and wallet views.",
+    "theme": "Theme",
+    "themeHelp": "Instantly swap the shell, cards, and inputs into light mode.",
+    "dark": "Dark",
+    "light": "Light",
+    "save": "Save preferences",
+    "intervalWarning": "Minimum refresh interval is 30 seconds (CoinGecko limit).",
+    "saved": "Settings saved successfully.",
+    "language": "Language",
+    "langEnglish": "English",
+    "langSerbian": "Serbian",
+    "languageHelp": "Switch the interface language and remember it for next time."
+  }
+}

@@ -1,4 +1,5 @@
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
+import i18n from "../i18n";
 
 const SettingsContext = createContext(null);
 
@@ -7,6 +8,7 @@ const STORAGE_KEYS = {
   chartRange: "defaultChartRange",
   currency: "defaultCurrency",
   theme: "theme",
+  language: "lang",
 };
 
 const DEFAULTS = {
@@ -14,6 +16,7 @@ const DEFAULTS = {
   chartRange: "7d",
   currency: "USD",
   theme: "dark",
+  language: "en",
 };
 
 export function SettingsProvider({ children }) {
@@ -37,6 +40,11 @@ export function SettingsProvider({ children }) {
     return saved || DEFAULTS.theme;
   });
 
+  const [language, setLanguage] = useState(() => {
+    const saved = localStorage.getItem(STORAGE_KEYS.language);
+    return saved || DEFAULTS.language;
+  });
+
   useEffect(() => {
     localStorage.setItem(STORAGE_KEYS.refreshInterval, String(refreshInterval));
   }, [refreshInterval]);
@@ -52,6 +60,11 @@ export function SettingsProvider({ children }) {
   useEffect(() => {
     localStorage.setItem(STORAGE_KEYS.theme, theme);
   }, [theme]);
+
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEYS.language, language);
+    i18n.changeLanguage(language);
+  }, [language]);
 
   useEffect(() => {
     const root = document.documentElement;
@@ -72,8 +85,10 @@ export function SettingsProvider({ children }) {
       setCurrency,
       theme,
       setTheme,
+      language,
+      setLanguage,
     }),
-    [refreshInterval, chartRange, currency, theme]
+    [refreshInterval, chartRange, currency, theme, language]
   );
 
   return <SettingsContext.Provider value={value}>{children}</SettingsContext.Provider>;

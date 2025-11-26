@@ -4,12 +4,14 @@ import axios from "axios";
 import Card from "../../components/Card";
 import { useSettings } from "../../context/SettingsContext";
 import { formatCurrency } from "../../utils/formatters";
+import { useTranslation } from "react-i18next";
 
 const LAST_WALLET_KEY = "lastWalletAddress";
 const metadataCache = new Map();
 
 export default function WalletPage() {
   const { currency, theme } = useSettings();
+  const { t } = useTranslation();
   const [address, setAddress] = useState(null); // aktivna adresa
   const [inputAddress, setInputAddress] = useState(""); // ono što piše u inputu
   const [balance, setBalance] = useState(null);
@@ -63,28 +65,28 @@ export default function WalletPage() {
         setBalance(balanceRes.value);
       } else {
         setBalance(null);
-        setWalletError("We couldn't load your balance. Please try again.");
+        setWalletError(t("wallet.errors.balance"));
       }
 
       if (tokensRes.status === "fulfilled") {
         setTokens(tokensRes.value);
       } else {
         setTokens([]);
-        setWalletError("Tokens could not be loaded.");
+        setWalletError(t("wallet.errors.tokens"));
       }
 
       if (txRes.status === "fulfilled") {
         setTxs(txRes.value);
       } else {
         setTxs([]);
-        setWalletError("Transactions are unavailable right now.");
+        setWalletError(t("wallet.errors.transactions"));
       }
     } catch (err) {
       console.error(err);
       setBalance(null);
       setTokens([]);
       setTxs([]);
-      setWalletError("Unexpected error while loading the wallet.");
+      setWalletError(t("wallet.errors.unexpected"));
     } finally {
       setLoading(false);
     }
@@ -93,7 +95,7 @@ export default function WalletPage() {
   // MetaMask connect → koristi isti mehanizam
   async function connectWallet() {
     if (typeof window.ethereum === "undefined") {
-      alert("MetaMask not detected.");
+      alert(t("wallet.errors.metamask"));
       return;
     }
 
@@ -141,7 +143,7 @@ export default function WalletPage() {
           if (active) setMeta(m);
         } catch (err) {
           console.error("meta error", err);
-          if (active) setMetaError("Metadata unavailable");
+          if (active) setMetaError(t("wallet.metadataError"));
         }
       }
 
@@ -149,15 +151,16 @@ export default function WalletPage() {
       return () => {
         active = false;
       };
-    }, [token.contractAddress]);
+    }, [t, token.contractAddress]);
 
     if (metaError) {
       return (
-        <div className={`text-sm ${isLight ? "text-rose-600" : "text-rose-300"}`}>{metaError}</div>
+        <div className={`text-sm ${isLight ? "text-rose-600" : "text-rose-300"}`}>{t("wallet.metadataError")}</div>
       );
     }
 
-    if (!meta) return <div className={`text-sm ${isLight ? "text-slate-600" : "text-slate-400"}`}>Loading...</div>;
+    if (!meta)
+      return <div className={`text-sm ${isLight ? "text-slate-600" : "text-slate-400"}`}>{t("common.loading")}</div>;
 
     const humanBalance = formatUnits(token.tokenBalance, meta.decimals);
 
@@ -182,7 +185,7 @@ export default function WalletPage() {
         </div>
         <div className="text-right">
           <p className="text-lg font-semibold">{Number(humanBalance).toFixed(4)}</p>
-          <p className={`text-xs ${isLight ? "text-slate-600" : "text-slate-400"}`}>token balance</p>
+          <p className={`text-xs ${isLight ? "text-slate-600" : "text-slate-400"}`}>{t("wallet.tokenBalance")}</p>
         </div>
       </div>
     );
@@ -205,11 +208,11 @@ export default function WalletPage() {
         <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div>
             <p className={`text-xs uppercase tracking-[0.3em] ${isLight ? "text-cyan-700" : "text-cyan-200/70"}`}>
-              Wallet dashboard
+              {t("wallet.heroTag")}
             </p>
-            <h1 className="text-3xl font-bold">Multi-chain vault</h1>
+            <h1 className="text-3xl font-bold">{t("wallet.heroTitle")}</h1>
             <p className={`mt-1 text-sm ${isLight ? "text-slate-600" : "text-slate-300"}`}>
-              Quick actions and KPIs in a two-column layout.
+              {t("wallet.heroSubtitle")}
             </p>
           </div>
           <div className="flex flex-wrap gap-3 text-sm font-semibold">
@@ -221,7 +224,7 @@ export default function WalletPage() {
                   : "border-orange-400/50 bg-orange-500/15 text-orange-100 shadow-inner shadow-black/30"
               }`}
             >
-              Connect MetaMask
+              {t("wallet.connect")}
             </button>
             <button
               onClick={handleConfirmAddress}
@@ -229,7 +232,7 @@ export default function WalletPage() {
                 isLight ? "border-slate-200 bg-white text-slate-800" : "border-white/10 bg-white/10 text-slate-100"
               }`}
             >
-              Confirm address
+              {t("wallet.confirm")}
             </button>
           </div>
         </div>
@@ -244,7 +247,7 @@ export default function WalletPage() {
           >
             <input
               type="text"
-              placeholder="Paste any wallet address"
+              placeholder={t("wallet.inputPlaceholder")}
               className={`w-full bg-transparent text-sm placeholder:text-slate-500 focus:outline-none ${
                 isLight ? "text-slate-900" : "text-white"
               }`}
@@ -259,19 +262,19 @@ export default function WalletPage() {
             onClick={handleConfirmAddress}
             className="rounded-2xl bg-gradient-to-r from-cyan-400 to-blue-600 px-4 py-3 text-sm font-semibold text-slate-950 shadow-lg shadow-cyan-500/30"
           >
-            Load data
+            {t("wallet.loadData")}
           </button>
         </div>
 
-        {walletError && (
-          <p className={`mt-2 text-sm ${isLight ? "text-rose-600" : "text-rose-300"}`}>{walletError}</p>
-        )}
+          {walletError && (
+            <p className={`mt-2 text-sm ${isLight ? "text-rose-600" : "text-rose-300"}`}>{walletError}</p>
+          )}
 
         {address && (
           <div className="mt-4 grid gap-4 md:grid-cols-2">
             <Card variant="glass">
               <p className={`text-xs uppercase tracking-wide ${isLight ? "text-slate-500" : "text-slate-400"}`}>
-                Active address
+                {t("wallet.activeAddress")}
               </p>
               <p className="mt-1 break-all text-lg font-semibold">{address}</p>
               {balance !== null && (
@@ -280,20 +283,20 @@ export default function WalletPage() {
                     {balance} ETH
                   </p>
                   <p className={`text-xs ${isLight ? "text-slate-600" : "text-slate-400"}`}>
-                    ≈ {formatCurrency(balance, currency)} (display currency)
+                    {t("wallet.balanceFiat", { value: formatCurrency(balance, currency) })}
                   </p>
                 </>
               )}
-              <p className={`mt-1 text-xs ${isLight ? "text-slate-500" : "text-slate-400"}`}>Auto-saves last address</p>
+              <p className={`mt-1 text-xs ${isLight ? "text-slate-500" : "text-slate-400"}`}>{t("wallet.autoSave")}</p>
             </Card>
             <Card variant="glass" className="flex items-center justify-between">
               <div>
                 <p className={`text-xs uppercase tracking-wide ${isLight ? "text-slate-500" : "text-slate-400"}`}>
-                  Sync status
+                  {t("wallet.syncStatus")}
                 </p>
-                <p className="mt-1 text-lg font-semibold">{loading ? "Refreshing..." : "Live"}</p>
+                <p className="mt-1 text-lg font-semibold">{loading ? t("wallet.status.refreshing") : t("wallet.status.live")}</p>
                 <p className={`text-xs ${isLight ? "text-slate-600" : "text-slate-400"}`}>
-                  Parallel fetching with graceful fallbacks.
+                  {t("wallet.syncCopy")}
                 </p>
               </div>
               <div
@@ -309,7 +312,7 @@ export default function WalletPage() {
       <div className="grid gap-4 lg:grid-cols-3">
         <Card className="lg:col-span-2">
           <div className="flex items-center justify-between">
-            <h2 className="text-xl font-semibold">Tokens</h2>
+            <h2 className="text-xl font-semibold">{t("wallet.tokensTitle")}</h2>
             <span
               className={`rounded-full border px-3 py-1 text-xs ${
                 isLight
@@ -317,12 +320,12 @@ export default function WalletPage() {
                   : "border-white/10 bg-white/5 text-slate-300"
               }`}
             >
-              Top 20
+              {t("wallet.tokensBadge")}
             </span>
           </div>
           {tokens.length === 0 && (
             <p className={`mt-3 text-sm italic ${isLight ? "text-slate-500" : "text-slate-400"}`}>
-              No tokens detected for this address.
+              {t("wallet.tokensEmpty")}
             </p>
           )}
 
@@ -353,11 +356,11 @@ export default function WalletPage() {
           </div>
         </Card>
 
-        <Card>
-          <h2 className="text-xl font-semibold">Portfolio mix</h2>
-          <p className={`mt-2 text-sm ${isLight ? "text-slate-600" : "text-slate-400"}`}>
-            Quick glance at token share across the total balance, shown proportionally via progress bars.
-          </p>
+      <Card>
+        <h2 className="text-xl font-semibold">{t("wallet.portfolioTitle")}</h2>
+        <p className={`mt-2 text-sm ${isLight ? "text-slate-600" : "text-slate-400"}`}>
+          {t("wallet.portfolioCopy")}
+        </p>
           <div className="mt-4 space-y-3">
             {tokens.slice(0, 5).map((t) => (
               <div
@@ -388,7 +391,7 @@ export default function WalletPage() {
               </div>
             ))}
 
-            {tokens.length === 0 && <p className="text-sm text-slate-400">Add an address to see composition.</p>}
+            {tokens.length === 0 && <p className="text-sm text-slate-400">{t("wallet.portfolioEmpty")}</p>}
           </div>
         </Card>
       </div>
@@ -396,8 +399,8 @@ export default function WalletPage() {
       <Card>
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-xl font-semibold">Transactions</h2>
-            <p className={`text-sm ${isLight ? "text-slate-600" : "text-slate-400"}`}>Latest activity with quick tags.</p>
+            <h2 className="text-xl font-semibold">{t("wallet.transactionsTitle")}</h2>
+            <p className={`text-sm ${isLight ? "text-slate-600" : "text-slate-400"}`}>{t("wallet.transactionsCopy")}</p>
           </div>
           <div className="flex gap-2 text-xs font-semibold">
             <span
@@ -405,28 +408,28 @@ export default function WalletPage() {
                 isLight ? "border-slate-200 bg-white text-slate-700" : "border-white/10 bg-white/5 text-slate-200"
               }`}
             >
-              All
+              {t("wallet.filters.all")}
             </span>
             <span
               className={`rounded-full border px-3 py-1 ${
                 isLight ? "border-slate-200 bg-white text-slate-700" : "border-white/10 bg-white/5 text-slate-200"
               }`}
             >
-              Received
+              {t("wallet.filters.received")}
             </span>
             <span
               className={`rounded-full border px-3 py-1 ${
                 isLight ? "border-slate-200 bg-white text-slate-700" : "border-white/10 bg-white/5 text-slate-200"
               }`}
             >
-              Sent
+              {t("wallet.filters.sent")}
             </span>
           </div>
         </div>
 
         {txs.length === 0 && (
           <p className={`mt-3 text-sm italic ${isLight ? "text-slate-500" : "text-slate-400"}`}>
-            No transactions found for this address.
+            {t("wallet.transactionsEmpty")}
           </p>
         )}
 
@@ -440,7 +443,7 @@ export default function WalletPage() {
                 }`}
               >
                 <p className="text-sm font-semibold">{tx.hash.slice(0, 12)}...</p>
-                <p className={isLight ? "text-xs text-slate-500" : "text-xs text-slate-400"}>Block: {tx.blockNumber}</p>
+                <p className={isLight ? "text-xs text-slate-500" : "text-xs text-slate-400"}>{t("wallet.block")} {tx.blockNumber}</p>
                 <div className="mt-2 flex items-center justify-between text-sm">
                   <span
                     className={`rounded-full px-3 py-1 ${
@@ -449,7 +452,7 @@ export default function WalletPage() {
                         : "bg-emerald-500/10 text-emerald-200"
                     }`}
                   >
-                    {tx.txreceipt_status === "1" ? "Confirmed" : "Pending"}
+                    {tx.txreceipt_status === "1" ? t("wallet.statuses.confirmed") : t("wallet.statuses.pending")}
                   </span>
                   <span className="font-semibold">{tx.value / 1e18} ETH</span>
                 </div>

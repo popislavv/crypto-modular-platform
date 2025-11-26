@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { useSettings } from "../context/SettingsContext";
+import { useTranslation } from "react-i18next";
 
 const POSITION_CLASSES = {
   "top-right": "top-4 right-4 items-end",
@@ -19,6 +20,7 @@ export default function Toast({
   duration = 3200,
 }) {
   const { theme } = useSettings();
+  const { t } = useTranslation();
   const isLight = theme === "light";
 
   useEffect(() => {
@@ -63,7 +65,7 @@ export default function Toast({
                   ? "bg-slate-100 text-slate-600 hover:bg-slate-200"
                   : "bg-white/10 text-white hover:bg-white/20"
               }`}
-              aria-label="Dismiss notification"
+              aria-label={t("common.dismiss")}
             >
               ✕
             </button>

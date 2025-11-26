@@ -5,6 +5,7 @@ import { useSettings } from "../../context/SettingsContext";
 import { formatCurrency } from "../../utils/formatters";
 import Toast from "../../components/Toast";
 import { useAlerts } from "../../context/AlertContext";
+import { useTranslation } from "react-i18next";
 import {
   AreaChart,
   Area,
@@ -30,6 +31,7 @@ export default function CoinDetailPage() {
   const { id } = useParams(); // npr. "bitcoin"
   const { chartRange, currency, theme } = useSettings();
   const { evaluatePriceAlerts } = useAlerts();
+  const { t } = useTranslation();
   const [coin, setCoin] = useState(null);
   const [chartData, setChartData] = useState([]);
   const [range, setRange] = useState(chartRange || "7d");
@@ -79,14 +81,19 @@ export default function CoinDetailPage() {
         setCoin(res.data);
       } catch (e) {
         console.error(e);
-        setError("Unable to load data for this coin.");
+        setError(t("coin.error"));
       } finally {
         setLoading(false);
       }
     }
 
     loadCoin();
-  }, [id]);
+  }, [id, t]);
+
+  useEffect(() => {
+    if (!coin) return;
+    evaluatePriceAlerts([coin], currency);
+  }, [coin, currency, evaluatePriceAlerts]);
 
   useEffect(() => {
     if (!coin) return;
@@ -130,14 +137,14 @@ export default function CoinDetailPage() {
       } catch (e) {
         console.error(e);
         setChartData([]);
-        setChartError("Unable to load the chart for this coin right now.");
+        setChartError(t("coin.chartError"));
       } finally {
         setChartLoading(false);
       }
     }
 
     loadChart();
-  }, [id, range]);
+  }, [id, range, t]);
 
   const stats = useMemo(() => {
     if (!coin?.market_data) return [];
@@ -158,34 +165,34 @@ export default function CoinDetailPage() {
 
     return [
       {
-        label: "Market Cap",
+        label: t("coin.stats.marketCap"),
         value: formatCurrency(md.market_cap.usd, currency),
         tone: isLight ? "text-emerald-600" : "text-emerald-300",
       },
       {
-        label: "24h Change",
+        label: t("coin.stats.change24h"),
         value: Number.isFinite(priceChange) ? `${priceChange.toFixed(2)}%` : "-",
         tone: priceChangeTone,
       },
       {
-        label: "Circulating Supply",
+        label: t("coin.stats.supply"),
         value: md.circulating_supply
           ? `${md.circulating_supply.toLocaleString()} ${coin.symbol.toUpperCase()}`
           : "-",
         tone: isLight ? "text-slate-700" : "text-slate-100",
       },
       {
-        label: "24h Volume",
+        label: t("coin.stats.volume24h"),
         value: formatCurrency(md.total_volume.usd, currency),
         tone: isLight ? "text-sky-700" : "text-sky-200",
       },
     ];
-  }, [coin, currency, isLight]);
+  }, [coin, currency, isLight, t]);
 
   function saveAlert() {
     const thresholdValue = Number(alertThreshold);
     if (!thresholdValue) {
-      setToast({ message: "Enter a valid price threshold.", variant: "warning" });
+      setToast({ message: t("coin.alerts.invalid"), variant: "warning" });
       return;
     }
 
@@ -218,7 +225,7 @@ export default function CoinDetailPage() {
     } catch (e) {
       // ignore cleanup failures
     }
-    setToast({ message: "Alert preference saved.", variant: "success" });
+    setToast({ message: t("coin.alerts.saved"), variant: "success" });
   }
 
   useEffect(() => {
@@ -234,12 +241,16 @@ export default function CoinDetailPage() {
 
     if (conditionMet) {
       setAlertHit(
-        `${coin?.name || ""} price crossed ${formatCurrency(thresholdValue, currency)} (${alertDirection})`
+        t("coin.alerts.hit", {
+          coin: coin?.name || "",
+          threshold: formatCurrency(thresholdValue, currency),
+          direction: alertDirection,
+        })
       );
     } else {
       setAlertHit(null);
     }
-  }, [alertDirection, alertThreshold, coin, currency]);
+  }, [alertDirection, alertThreshold, coin, currency, t]);
 
   return (
     <div className={`space-y-6 ${isLight ? "text-slate-900" : "text-white"}`}>
@@ -249,10 +260,10 @@ export default function CoinDetailPage() {
           isLight ? "text-cyan-700 hover:text-cyan-900" : "text-cyan-200 hover:text-white"
         }`}
       >
-        <span className="text-lg">←</span> Back to market
+        <span className="text-lg">←</span> {t("common.backToMarket")}
       </Link>
 
-      {loading && <p className="mt-4 text-slate-400">Loading coin data...</p>}
+      {loading && <p className="mt-4 text-slate-400">{t("coin.loading")}</p>}
       {error && <p className="mt-4 text-rose-500">{error}</p>}
 
       {coin && (
@@ -293,10 +304,10 @@ export default function CoinDetailPage() {
                     : "border-emerald-400/40 bg-emerald-500/10 text-emerald-200"
                 }`}
               >
-                Verified market data
+                {t("coin.badges.verified")}
               </span>
               <span className={`rounded-full border px-3 py-1 ${isLight ? "border-slate-200 bg-white" : "border-white/15 bg-white/5 text-slate-200"}`}>
-                Spot pairs
+                {t("coin.badges.spot")}
               </span>
               <span
                 className={`rounded-full border px-3 py-1 ${
@@ -305,7 +316,7 @@ export default function CoinDetailPage() {
                     : "border-blue-400/40 bg-blue-500/10 text-blue-200"
                 }`}
               >
-                On-chain
+                {t("coin.badges.onchain")}
               </span>
             </div>
           </div>
@@ -335,9 +346,9 @@ export default function CoinDetailPage() {
           >
             <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
               <div>
-                <h2 className="text-lg font-semibold">Price alerts</h2>
+                <h2 className="text-lg font-semibold">{t("coin.alerts.title")}</h2>
                 <p className={`text-sm ${isLight ? "text-slate-600" : "text-slate-300"}`}>
-                  Save a threshold and we will flag when the live price crosses it.
+                  {t("coin.alerts.subtitle")}
                 </p>
               </div>
               {alertHit && (
@@ -354,7 +365,7 @@ export default function CoinDetailPage() {
             </div>
             <div className="grid gap-3 md:grid-cols-3">
               <label className="flex flex-col gap-2 text-sm font-semibold">
-                <span className={isLight ? "text-slate-700" : "text-slate-200"}>Direction</span>
+                <span className={isLight ? "text-slate-700" : "text-slate-200"}>{t("coin.alerts.directionLabel")}</span>
                 <select
                   value={alertDirection}
                   onChange={(e) => setAlertDirection(e.target.value)}
@@ -365,15 +376,15 @@ export default function CoinDetailPage() {
                   }`}
                 >
                   <option value="above" className="text-slate-900">
-                    Alert when price goes above
+                    {t("coin.alerts.above")}
                   </option>
                   <option value="below" className="text-slate-900">
-                    Alert when price goes below
+                    {t("coin.alerts.below")}
                   </option>
                 </select>
               </label>
               <label className="flex flex-col gap-2 text-sm font-semibold md:col-span-2">
-                <span className={isLight ? "text-slate-700" : "text-slate-200"}>Price threshold (USD)</span>
+                <span className={isLight ? "text-slate-700" : "text-slate-200"}>{t("coin.alerts.threshold")}</span>
                 <div className="flex gap-2">
                   <input
                     type="number"
@@ -385,13 +396,13 @@ export default function CoinDetailPage() {
                         ? "border-slate-200 bg-white text-slate-900"
                         : "border-white/10 bg-slate-900/70 text-white"
                     }`}
-                    placeholder="e.g. 65000"
+                    placeholder={t("coin.alerts.placeholder")}
                   />
                   <button
                     onClick={saveAlert}
                     className="rounded-xl bg-gradient-to-r from-cyan-400 to-blue-600 px-4 py-2 text-sm font-semibold text-slate-950 shadow-lg shadow-cyan-500/30"
                   >
-                    Save alert
+                    {t("coin.alerts.save")}
                   </button>
                 </div>
               </label>
@@ -400,7 +411,7 @@ export default function CoinDetailPage() {
 
           {/* range toggle + chart */}
           <div className="mt-8 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-            <h2 className="text-xl font-semibold">Price action</h2>
+            <h2 className="text-xl font-semibold">{t("coin.priceAction")}</h2>
             <div
               className={`flex items-center gap-2 rounded-full border p-1 text-xs font-semibold ${
                 isLight
@@ -422,13 +433,13 @@ export default function CoinDetailPage() {
                     : "text-slate-200 hover:text-white"
                 }`}
               >
-                {r.toUpperCase()}
+                {t(`common.range.${r}`)}
               </button>
               ))}
             </div>
           </div>
 
-          {chartLoading && <p className="text-slate-400">Loading chart data...</p>}
+          {chartLoading && <p className="text-slate-400">{t("coin.chartLoading")}</p>}
           {chartError && <p className="text-rose-400">{chartError}</p>}
 
           {chartData.length > 0 ? (
@@ -471,7 +482,7 @@ export default function CoinDetailPage() {
               </ResponsiveContainer>
             </div>
           ) : (
-            !chartLoading && !chartError && <p className="text-slate-400">No chart data available.</p>
+            !chartLoading && !chartError && <p className="text-slate-400">{t("coin.noChart")}</p>
           )}
 
           <div className="mt-6 flex flex-wrap gap-2 text-sm font-semibold">
@@ -489,7 +500,7 @@ export default function CoinDetailPage() {
                     : "border-white/10 bg-white/5 text-slate-200"
                 }`}
               >
-                {tab}
+                {t(`coin.tabs.${tab === "on-chain" ? "onchain" : tab}`)}
               </button>
             ))}
           </div>
@@ -499,17 +510,13 @@ export default function CoinDetailPage() {
               isLight ? "border-slate-200 bg-white text-slate-700" : "border-white/10 bg-white/5 text-slate-200"
             }`}
           >
-            {activeTab === "overview" && (
-              <p>
-                Overview keeps quick market and supply notes aligned with the stat cards above.
-              </p>
-            )}
-            {activeTab === "markets" && <p>Markets tab can show order books or exchange listings.</p>}
-            {activeTab === "on-chain" && <p>On-chain tab is reserved for network metrics and flows.</p>}
+            {activeTab === "overview" && <p>{t("coin.tabCopy.overview")}</p>}
+            {activeTab === "markets" && <p>{t("coin.tabCopy.markets")}</p>}
+            {activeTab === "on-chain" && <p>{t("coin.tabCopy.onchain")}</p>}
           </div>
 
           <p className={`mt-4 text-xs ${isLight ? "text-slate-500" : "text-slate-500"}`}>
-            Data source: CoinGecko API
+            {t("coin.dataSource")}
           </p>
         </div>
       )}

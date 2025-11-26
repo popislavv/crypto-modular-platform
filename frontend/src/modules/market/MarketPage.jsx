@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useSettings } from "../../context/SettingsContext";
 import { formatCompact, formatCurrency } from "../../utils/formatters";
 import { useAlerts } from "../../context/AlertContext";
+import { useTranslation } from "react-i18next";
 
 export default function MarketPage() {
   const [coins, setCoins] = useState([]);
@@ -16,6 +17,7 @@ export default function MarketPage() {
   const navigate = useNavigate();
   const { currency, theme } = useSettings();
   const { evaluatePriceAlerts } = useAlerts();
+  const { t } = useTranslation();
   const isLight = theme === "light";
 
   async function loadData() {
@@ -27,7 +29,7 @@ export default function MarketPage() {
       setCoins(res.data);
     } catch (e) {
       console.error(e);
-      setError("Unable to load market data right now. Please try again shortly.");
+      setError(t("market.error"));
       setCoins([]);
       setFilteredCoins([]);
     } finally {
@@ -93,13 +95,11 @@ export default function MarketPage() {
         <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div>
             <p className={`text-xs uppercase tracking-[0.3em] ${isLight ? "text-cyan-600" : "text-cyan-200/70"}`}>
-              Live Markets
+              {t("market.heroTag")}
             </p>
-            <h1 className="text-3xl font-bold md:text-4xl">
-              Crypto Market Overview
-            </h1>
+            <h1 className="text-3xl font-bold md:text-4xl">{t("market.heroTitle")}</h1>
             <p className={`mt-2 max-w-2xl text-sm ${isLight ? "text-slate-600" : "text-slate-300"}`}>
-              Premium card layout with KPI chips, segmented controls, and a pro table inspired by modern trading terminals.
+              {t("market.heroSubtitle")}
             </p>
           </div>
           <div className="flex flex-wrap gap-3 text-sm">
@@ -110,9 +110,11 @@ export default function MarketPage() {
                   : "border-emerald-400/30 bg-emerald-500/10 text-emerald-200"
               }`}
             >
-              Real-time
+              {t("market.badgeRealtime")}
             </span>
-            <span className={`rounded-full border px-3 py-1 ${chipBorder} ${chipBg} ${chipText}`}>{currency} quotes</span>
+            <span className={`rounded-full border px-3 py-1 ${chipBorder} ${chipBg} ${chipText}`}>
+              {t("market.badgeQuotes", { currency })}
+            </span>
             <span
               className={`rounded-full border px-3 py-1 ${
                 isLight
@@ -120,7 +122,7 @@ export default function MarketPage() {
                   : "border-blue-400/30 bg-blue-500/10 text-blue-200"
               }`}
             >
-              Pro table
+              {t("market.badgeProTable")}
             </span>
           </div>
         </div>
@@ -133,7 +135,9 @@ export default function MarketPage() {
                 : "border-white/10 bg-white/5 shadow-black/30"
             }`}
           >
-            <p className={`text-xs ${isLight ? "text-slate-500" : "text-slate-400"}`}>Total market cap</p>
+            <p className={`text-xs ${isLight ? "text-slate-500" : "text-slate-400"}`}>
+              {t("market.metrics.totalMarketCap")}
+            </p>
             <p className="text-2xl font-semibold text-glow">{formatCompact(metrics.totalMarketCap, currency)}</p>
           </div>
           <div
@@ -143,7 +147,9 @@ export default function MarketPage() {
                 : "border-white/10 bg-white/5 shadow-black/30"
             }`}
           >
-            <p className={`text-xs ${isLight ? "text-slate-500" : "text-slate-400"}`}>24h volume</p>
+            <p className={`text-xs ${isLight ? "text-slate-500" : "text-slate-400"}`}>
+              {t("market.metrics.totalVolume")}
+            </p>
             <p className="text-2xl font-semibold">{formatCompact(metrics.totalVolume, currency)}</p>
           </div>
           <div
@@ -153,7 +159,9 @@ export default function MarketPage() {
                 : "border-white/10 bg-white/5 shadow-black/30"
             }`}
           >
-            <p className={`text-xs ${isLight ? "text-slate-500" : "text-slate-400"}`}>BTC dominance</p>
+            <p className={`text-xs ${isLight ? "text-slate-500" : "text-slate-400"}`}>
+              {t("market.metrics.btcDominance")}
+            </p>
             <p className="text-2xl font-semibold text-emerald-500">
               {metrics.dominance ? `${metrics.dominance.toFixed(2)}%` : "-"}
             </p>
@@ -165,7 +173,9 @@ export default function MarketPage() {
                 : "border-white/10 bg-white/5 shadow-black/30"
             }`}
           >
-            <p className={`text-xs ${isLight ? "text-slate-500" : "text-slate-400"}`}>ETH dominance</p>
+            <p className={`text-xs ${isLight ? "text-slate-500" : "text-slate-400"}`}>
+              {t("market.metrics.ethDominance")}
+            </p>
             <p className="text-2xl font-semibold text-blue-500">
               {metrics.ethDominance ? `${metrics.ethDominance.toFixed(2)}%` : "-"}
             </p>
@@ -174,7 +184,7 @@ export default function MarketPage() {
       </div>
 
       {error && <p className="text-red-400">{error}</p>}
-      {loading && <p className="text-gray-400">Loading market data...</p>}
+      {loading && <p className="text-gray-400">{t("market.loading")}</p>}
 
       <div
         className={`glass-panel p-4 sm:p-6 ${
@@ -194,7 +204,7 @@ export default function MarketPage() {
             </svg>
             <input
               type="text"
-              placeholder="Search by name or symbol..."
+              placeholder={t("common.searchPlaceholder")}
               className={`w-full bg-transparent text-sm placeholder:text-slate-500 focus:outline-none ${
                 isLight ? "text-slate-900" : "text-white"
               }`}
@@ -211,8 +221,8 @@ export default function MarketPage() {
             }`}
           >
               {[
-                { key: "top10", label: "Top 10" },
-                { key: "all", label: "All" },
+                { key: "top10", label: t("market.segment.top10") },
+                { key: "all", label: t("market.segment.all") },
               ].map((option) => (
                 <button
                   key={option.key}
@@ -275,7 +285,7 @@ export default function MarketPage() {
                   {formatCurrency(coin.current_price, currency)}
                 </div>
                 <div className={`mt-2 flex items-center justify-between text-xs ${isLight ? "text-slate-500" : "text-slate-400"}`}>
-                  <span>Market cap</span>
+                  <span>{t("market.labels.marketCap")}</span>
                   <span className={`font-semibold ${isLight ? "text-slate-800" : "text-slate-200"}`}>
                     {formatCompact(coin.market_cap, currency)}
                   </span>
@@ -295,19 +305,21 @@ export default function MarketPage() {
               isLight ? "border-slate-100 text-slate-800" : "border-white/5 text-slate-200"
             }`}
           >
-            <p className="font-semibold">Pro market table</p>
-            <p className={`text-xs ${isLight ? "text-slate-500" : "text-slate-400"}`}>Scroll for full depth</p>
+            <p className="font-semibold">{t("market.table.title")}</p>
+            <p className={`text-xs ${isLight ? "text-slate-500" : "text-slate-400"}`}>
+              {t("market.table.hint")}
+            </p>
           </div>
           <div className="overflow-x-auto">
             <table className="min-w-full text-sm">
               <thead className={`${isLight ? "bg-slate-50 text-slate-600" : "bg-white/5 text-slate-300"}`}>
                 <tr>
-                  <th className="px-3 py-3 text-left">#</th>
-                  <th className="px-3 py-3 text-left">Name</th>
-                  <th className="px-3 py-3 text-right">Price</th>
-                  <th className="px-3 py-3 text-right">24h %</th>
-                  <th className="px-3 py-3 text-right">Market Cap</th>
-                  <th className="px-3 py-3 text-right">Volume 24h</th>
+                  <th className="px-3 py-3 text-left">{t("market.table.headers.rank")}</th>
+                  <th className="px-3 py-3 text-left">{t("market.table.headers.name")}</th>
+                  <th className="px-3 py-3 text-right">{t("market.table.headers.price")}</th>
+                  <th className="px-3 py-3 text-right">{t("market.table.headers.change")}</th>
+                  <th className="px-3 py-3 text-right">{t("market.table.headers.marketCap")}</th>
+                  <th className="px-3 py-3 text-right">{t("market.table.headers.volume")}</th>
                 </tr>
               </thead>
               <tbody>
@@ -365,7 +377,7 @@ export default function MarketPage() {
                 {filteredCoins.length === 0 && !loading && (
                   <tr>
                     <td className={`px-3 py-4 text-center ${isLight ? "text-slate-500" : "text-gray-400"}`} colSpan={6}>
-                      No coins to display.
+                      {t("market.table.empty")}
                     </td>
                   </tr>
                 )}

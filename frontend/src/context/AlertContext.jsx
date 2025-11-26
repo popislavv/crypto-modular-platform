@@ -1,5 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { formatCurrency } from "../utils/formatters";
+import { useTranslation } from "react-i18next";
 
 const AlertContext = createContext(null);
 const ALERT_STORAGE_KEY = "priceAlerts";
@@ -7,6 +8,7 @@ const ALERT_TRIGGER_STATE_KEY = "priceAlertTriggeredState";
 const ALERT_DISMISSED_STATE_KEY = "priceAlertDismissedState";
 
 export function AlertProvider({ children }) {
+  const { t } = useTranslation();
   const [notifications, setNotifications] = useState([]);
   const [triggeredAlerts, setTriggeredAlerts] = useState(() => {
     try {
@@ -88,8 +90,13 @@ export function AlertProvider({ children }) {
 
         if (conditionMet && !wasMet && !wasDismissed) {
           const displayThreshold = formatCurrency(alertConfig.threshold, currency);
+          const directionLabel = t(`alerts.${alertConfig.direction === "above" ? "above" : "below"}`);
           pushNotification({
-            message: `Alert: ${coin.name || coin.symbol || ""} price crossed ${displayThreshold} (${alertConfig.direction})`,
+            message: t("alerts.toast", {
+              coin: coin.name || coin.symbol || "",
+              threshold: displayThreshold,
+              direction: directionLabel,
+            }),
             variant: "warning",
             autoHide: false,
             alertKey: key,
@@ -111,7 +118,7 @@ export function AlertProvider({ children }) {
         setTriggeredAlerts(nextTriggered);
       }
     },
-    [dismissedAlerts, pushNotification, triggeredAlerts]
+    [dismissedAlerts, pushNotification, t, triggeredAlerts]
   );
 
   const value = useMemo(

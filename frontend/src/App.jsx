@@ -1,6 +1,7 @@
 import './App.css'
 import { useMemo, useState } from "react";
 import { BrowserRouter, Routes, Route, Link, NavLink } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import MarketPage from "./modules/market/MarketPage";
 import WalletPage from "./modules/wallet/WalletPage.jsx";
 import SettingsPage from "./modules/settings/SettingsPage.jsx";
@@ -10,6 +11,7 @@ import { AlertProvider, useAlerts } from "./context/AlertContext";
 import Toast from "./components/Toast";
 
 function Shell() {
+  const { t } = useTranslation();
   const { theme } = useSettings();
   const { notifications, dismiss } = useAlerts();
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -32,11 +34,11 @@ function Shell() {
 
   const navItems = useMemo(
     () => [
-      { path: "/", label: "Market" },
-      { path: "/wallet", label: "Wallet" },
-      { path: "/settings", label: "Settings" },
+      { path: "/", label: t("nav.market") },
+      { path: "/wallet", label: t("nav.wallet") },
+      { path: "/settings", label: t("nav.settings") },
     ],
-    []
+    [t]
   );
 
   return (
@@ -80,8 +82,8 @@ function Shell() {
               </svg>
             </div>
             <div className="leading-tight">
-              <p className="text-sm uppercase tracking-[0.2em] text-cyan-400">Crypto</p>
-              <p className="text-lg font-semibold">Modular Platform</p>
+              <p className="text-sm uppercase tracking-[0.2em] text-cyan-400">{t("nav.logoTagline")}</p>
+              <p className="text-lg font-semibold">{t("nav.logoTitle")}</p>
             </div>
           </Link>
 
@@ -108,7 +110,7 @@ function Shell() {
                   : "border-cyan-400/50 bg-white/5 text-cyan-200 shadow-cyan-500/10"
               }`}
             >
-              Connect Wallet
+              {t("nav.connectWallet")}
             </Link>
             <button
               onClick={() => setMobileOpen((prev) => !prev)}
@@ -117,7 +119,7 @@ function Shell() {
                   ? "border-slate-200 bg-white text-slate-800 shadow"
                   : "border-white/10 bg-white/5 text-white"
               }`}
-              aria-label="Toggle navigation"
+              aria-label={t("nav.toggleMenu")}
             >
               <span className="block h-0.5 w-5 rounded-full bg-current" />
               <span className="mt-1 block h-0.5 w-5 rounded-full bg-current" />

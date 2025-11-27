@@ -2,11 +2,13 @@ import express from "express";
 import axios from "axios";
 import "dotenv/config";
 import cors from "cors";
+import nodemailer from "nodemailer";
 
 const app = express();
 const PORT = 3100;
 
 app.use(cors());
+app.use(express.json());
 
 // 🟡 SIMPLE CACHE ZA MARKET
 let lastMarketData: any[] = [];
@@ -125,6 +127,47 @@ app.get("/wallet/:address/tx", async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "tx list error" });
+  }
+});
+
+app.post("/contact", async (req, res) => {
+  const { email, message } = req.body || {};
+
+  if (!email || !message) {
+    return res.status(400).json({ error: "Missing email or message" });
+  }
+
+  try {
+    const transporter = nodemailer.createTransport(
+      process.env.SMTP_HOST
+        ? {
+            host: process.env.SMTP_HOST,
+            port: Number(process.env.SMTP_PORT) || 587,
+            secure: false,
+            auth:
+              process.env.SMTP_USER && process.env.SMTP_PASS
+                ? {
+                    user: process.env.SMTP_USER,
+                    pass: process.env.SMTP_PASS,
+                  }
+                : undefined,
+          }
+        : { jsonTransport: true }
+    );
+
+    await transporter.sendMail({
+      from: process.env.SMTP_FROM || email,
+      to: "popovicn700@gmail.com",
+      replyTo: email,
+      subject: "Chat with us message",
+      text: message,
+      html: `<p>${message}</p><p><strong>From:</strong> ${email}</p>`,
+    });
+
+    res.json({ status: "sent" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "send failed" });
   }
 });
 

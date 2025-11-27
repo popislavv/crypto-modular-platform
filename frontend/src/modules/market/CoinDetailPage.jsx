@@ -377,13 +377,13 @@ export default function CoinDetailPage() {
                 </div>
               )}
             </div>
-            <div className="grid gap-3 md:grid-cols-3 md:items-end">
-              <label className="flex flex-col gap-2 text-sm font-semibold">
+            <div className="grid gap-3 md:grid-cols-4 md:items-end">
+              <label className="flex flex-col gap-2 text-sm font-semibold md:col-span-1">
                 <span className={isLight ? "text-slate-700" : "text-slate-200"}>{t("coin.alerts.directionLabel")}</span>
                 <select
                   value={alertDirection}
                   onChange={(e) => setAlertDirection(e.target.value)}
-                  className={`rounded-xl border px-3 py-2 text-sm font-semibold ${
+                  className={`rounded-xl border px-3 py-3 text-sm font-semibold ${
                     isLight
                       ? "border-slate-200 bg-white text-slate-900"
                       : "border-white/10 bg-slate-900/70 text-white"
@@ -404,7 +404,7 @@ export default function CoinDetailPage() {
                   min={0}
                   value={alertThreshold}
                   onChange={(e) => setAlertThreshold(e.target.value)}
-                  className={`w-full rounded-xl border px-3 py-2 text-sm ${
+                  className={`w-full rounded-xl border px-3 py-3 text-sm ${
                     isLight
                       ? "border-slate-200 bg-white text-slate-900"
                       : "border-white/10 bg-slate-900/70 text-white"
@@ -412,10 +412,10 @@ export default function CoinDetailPage() {
                   placeholder={t("coin.alerts.placeholder")}
                 />
               </label>
-              <div className="md:col-span-3 flex justify-end">
+              <div className="flex justify-end md:col-span-1">
                 <button
                   onClick={saveAlert}
-                  className="rounded-xl bg-gradient-to-r from-cyan-400 to-blue-600 px-5 py-2 text-sm font-semibold text-slate-950 shadow-lg shadow-cyan-500/30"
+                  className="w-full rounded-xl bg-gradient-to-r from-cyan-400 to-blue-600 px-5 py-3 text-sm font-semibold text-slate-950 shadow-lg shadow-cyan-500/30"
                 >
                   {t("coin.alerts.save")}
                 </button>

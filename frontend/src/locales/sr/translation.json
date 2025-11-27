@@ -38,7 +38,8 @@
     "loading": "Učitavanje tržišta...",
     "segment": {
       "top10": "Top 10",
-      "all": "Sve"
+      "all": "Sve",
+      "favorites": "Omiljeni"
     },
     "labels": {
       "marketCap": "Tržišna kapitalizacija"
@@ -184,12 +185,49 @@
   "chat": {
     "title": "Čet",
     "subtitle": "Pišite nam",
-    "emailOptional": "Email (opciono)",
+    "open": "Otvori čet",
+    "close": "Zatvori",
+    "tabs": {
+      "chat": "Čet",
+      "help": "Pomoć"
+    },
+    "emailLabel": "Email",
     "emailPlaceholder": "vas@email.com",
     "message": "Poruka",
     "messagePlaceholder": "Kako možemo da pomognemo?",
     "send": "Pošalji",
-    "open": "Otvori čet",
-    "close": "Zatvori"
+    "sending": "Slanje...",
+    "success": "Poruka je poslata. Uskoro ćemo se javiti!",
+    "error": "Poruku trenutno nije moguće poslati.",
+    "validation": {
+      "required": "Email i poruka su obavezni.",
+      "email": "Unesite validan email."
+    },
+    "help": {
+      "title": "Često postavljana pitanja",
+      "subtitle": "Brzi odgovori na uobičajena pitanja.",
+      "items": [
+        {
+          "q": "Kako rade price alerti?",
+          "a": "Sačuvajte prag na bilo kom coinu. Obavestićemo vas kada cena pređe taj nivo."
+        },
+        {
+          "q": "Kako menjam jezik?",
+          "a": "Otvorite Settings, izaberite engleski ili srpski, snimite i UI se automatski osvežava."
+        },
+        {
+          "q": "Šta predstavlja portfolio mix?",
+          "a": "Prikazuje udeo svakog tokena u vašem učitanom balansu."
+        },
+        {
+          "q": "Kako dodajem coin u omiljene?",
+          "a": "Kliknite na zvezdicu u tabeli ili na stranici coina da ga dodate/uklonite iz watchliste."
+        },
+        {
+          "q": "Kako filtriram samo omiljene?",
+          "a": "Koristite slajder na Market stranici da pređete na Favorites prikaz."
+        }
+      ]
+    }
   }
 }

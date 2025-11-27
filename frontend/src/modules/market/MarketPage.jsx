@@ -11,8 +11,7 @@ export default function MarketPage() {
   const [coins, setCoins] = useState([]);
   const [filteredCoins, setFilteredCoins] = useState([]);
   const [search, setSearch] = useState("");
-  const [viewMode, setViewMode] = useState("top10"); // "top10" | "all"
-  const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
+  const [viewMode, setViewMode] = useState("top10"); // "top10" | "all" | "favorites"
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -22,6 +21,15 @@ export default function MarketPage() {
   const { favorites, toggleFavorite } = useFavorites();
   const { t } = useTranslation();
   const isLight = theme === "light";
+  const segmentOptions = useMemo(
+    () => [
+      { key: "top10", label: t("market.segment.top10") },
+      { key: "all", label: t("market.segment.all") },
+      { key: "favorites", label: t("market.segment.favorites") },
+    ],
+    [t]
+  );
+  const activeSegmentIndex = Math.max(0, segmentOptions.findIndex((o) => o.key === viewMode));
 
   async function loadData() {
     try {
@@ -63,14 +71,12 @@ export default function MarketPage() {
 
     if (viewMode === "top10") {
       list = list.slice(0, 10);
-    }
-
-    if (showFavoritesOnly) {
+    } else if (viewMode === "favorites") {
       list = list.filter((c) => favorites.includes(c.id));
     }
 
     setFilteredCoins(list);
-  }, [coins, search, viewMode, showFavoritesOnly, favorites]);
+  }, [coins, search, viewMode, favorites]);
 
   const metrics = useMemo(() => {
     const totalMarketCap = coins.reduce((sum, c) => sum + (c.market_cap || 0), 0);
@@ -221,49 +227,39 @@ export default function MarketPage() {
           </div>
           <div className="flex flex-wrap items-center gap-3">
             <div
-              className={`inline-flex rounded-full border p-1 text-xs font-semibold shadow-inner ${
+              className={`relative inline-flex w-full max-w-md items-center rounded-full border p-1 text-xs font-semibold shadow-inner ${
                 isLight
                   ? "border-slate-200 bg-white shadow-slate-200/60"
                   : "border-white/10 bg-slate-900/70 shadow-black/30"
               }`}
             >
-                {[
-                  { key: "top10", label: t("market.segment.top10") },
-                  { key: "all", label: t("market.segment.all") },
-                ].map((option) => (
-                  <button
-                    key={option.key}
-                    onClick={() => setViewMode(option.key)}
-                    className={`rounded-full px-4 py-2 transition ${
-                      viewMode === option.key
-                        ? isLight
-                          ? "bg-cyan-100 text-cyan-900 shadow-sm shadow-cyan-300/40"
-                          : "bg-white text-slate-900 shadow-sm shadow-cyan-500/30"
-                        : isLight
-                        ? "text-slate-700 hover:text-cyan-800"
-                        : "text-slate-200 hover:text-white"
-                    }`}
-                  >
+              <span
+                className={`absolute inset-y-1 left-1 w-1/3 rounded-full transition-transform duration-300 ease-in-out ${
+                  isLight
+                    ? "bg-cyan-100 shadow-sm shadow-cyan-200"
+                    : "bg-white text-slate-900 shadow-sm shadow-cyan-500/40"
+                }`}
+                style={{ transform: `translateX(${activeSegmentIndex * 100}%)` }}
+                aria-hidden
+              />
+              {segmentOptions.map((option) => (
+                <button
+                  key={option.key}
+                  onClick={() => setViewMode(option.key)}
+                  className={`relative z-10 flex-1 rounded-full px-4 py-2 transition-colors ${
+                    viewMode === option.key
+                      ? isLight
+                        ? "text-cyan-900"
+                        : "text-slate-900"
+                      : isLight
+                      ? "text-slate-700 hover:text-cyan-800"
+                      : "text-slate-200 hover:text-white"
+                  }`}
+                >
                   {option.label}
                 </button>
               ))}
             </div>
-
-            <label
-              className={`flex items-center gap-2 rounded-full border px-3 py-2 text-xs font-semibold ${
-                isLight
-                  ? "border-slate-200 bg-white text-slate-800"
-                  : "border-white/10 bg-slate-900/70 text-slate-200"
-              }`}
-            >
-              <input
-                type="checkbox"
-                checked={showFavoritesOnly}
-                onChange={(e) => setShowFavoritesOnly(e.target.checked)}
-                className="h-4 w-4 accent-cyan-500"
-              />
-              {t("market.showFavorites")}
-            </label>
           </div>
         </div>
 

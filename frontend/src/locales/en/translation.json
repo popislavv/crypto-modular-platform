@@ -38,7 +38,8 @@
     "loading": "Loading market data...",
     "segment": {
       "top10": "Top 10",
-      "all": "All"
+      "all": "All",
+      "favorites": "Favorites"
     },
     "labels": {
       "marketCap": "Market cap"
@@ -184,12 +185,49 @@
   "chat": {
     "title": "Chat",
     "subtitle": "Chat with us",
-    "emailOptional": "Email (optional)",
+    "open": "Open chat",
+    "close": "Close chat",
+    "tabs": {
+      "chat": "Chat",
+      "help": "Help"
+    },
+    "emailLabel": "Email",
     "emailPlaceholder": "your@email.com",
     "message": "Message",
     "messagePlaceholder": "How can we help?",
     "send": "Send",
-    "open": "Open chat",
-    "close": "Close chat"
+    "sending": "Sending...",
+    "success": "Message sent. We'll reach out soon!",
+    "error": "We couldn't send your message right now.",
+    "validation": {
+      "required": "Email and message are required.",
+      "email": "Enter a valid email."
+    },
+    "help": {
+      "title": "Frequently asked questions",
+      "subtitle": "Quick answers to common questions.",
+      "items": [
+        {
+          "q": "How do price alerts work?",
+          "a": "Save a threshold on any coin. We'll notify you when the live price crosses it."
+        },
+        {
+          "q": "How do I change the language?",
+          "a": "Open Settings, choose English or Serbian, save, and the UI reloads in that language."
+        },
+        {
+          "q": "What does the portfolio mix represent?",
+          "a": "It shows the percentage share of each token within your loaded wallet balance."
+        },
+        {
+          "q": "How can I add a coin to favorites?",
+          "a": "Click the star on any market row or coin page to toggle it in your watchlist."
+        },
+        {
+          "q": "How do I filter favorites only?",
+          "a": "Use the slider on the Market page to switch to Favorites view."
+        }
+      ]
+    }
   }
 }

@@ -208,6 +208,7 @@ export default function CoinDetailPage() {
     } catch (e) {
       // best-effort cleanup
     }
+    setToast({ message: t("coin.alerts.saved"), variant: "success" });
   }
 
   function saveAlert(nextThreshold = alertThreshold) {
@@ -452,6 +453,17 @@ export default function CoinDetailPage() {
                   {t("coin.alerts.save")}
                 </button>
               </div>
+              {alertHit && (
+                <div
+                  className={`rounded-xl border px-3 py-2 text-sm font-semibold ${
+                    isLight
+                      ? "border-amber-200 bg-amber-50 text-amber-800"
+                      : "border-amber-400/40 bg-amber-500/10 text-amber-200"
+                  }`}
+                >
+                  {alertHit}
+                </div>
+              )}
             </div>
           </div>
 

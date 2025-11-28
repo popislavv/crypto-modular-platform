@@ -31,6 +31,7 @@ export default function MarketPage() {
   );
   const activeSegmentIndex = Math.max(0, segmentOptions.findIndex((o) => o.key === viewMode));
   const segmentWidth = 100 / segmentOptions.length;
+  const segmentTranslate = `translateX(calc(${activeSegmentIndex} * (100% / ${segmentOptions.length})))`;
 
   async function loadData() {
     try {
@@ -241,8 +242,8 @@ export default function MarketPage() {
                     : "bg-white text-slate-900 shadow-sm shadow-cyan-500/40"
                 }`}
                 style={{
-                  width: `${segmentWidth}%`,
-                  transform: `translateX(${activeSegmentIndex * segmentWidth}%)`,
+                  width: `calc((100% - 0.5rem) / ${segmentOptions.length})`,
+                  transform: segmentTranslate,
                 }}
                 aria-hidden
               />

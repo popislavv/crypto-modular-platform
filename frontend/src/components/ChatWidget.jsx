@@ -64,23 +64,32 @@ export default function ChatWidget() {
   return (
     <div className="pointer-events-none fixed bottom-4 right-4 z-40 flex flex-col items-end gap-3 sm:bottom-6 sm:right-6">
       {open && (
-        <div className="pointer-events-auto fixed inset-0 z-40 flex items-end justify-end sm:items-center">
-          <div className="absolute inset-0 bg-black/30" onClick={() => setOpen(false)} />
+        <div className="pointer-events-auto fixed inset-0 z-40 flex items-end justify-end bg-black/40 sm:items-end">
           <div
-            className={`relative m-4 w-full max-w-3xl rounded-3xl border backdrop-blur ${panelBase}`}
+            className={`relative m-4 w-[380px] max-w-[95vw] rounded-3xl border backdrop-blur ${panelBase}`}
             role="dialog"
             aria-modal="true"
-            style={{ minHeight: "520px", width: "min(95vw, 820px)" }}
+            style={{ height: "520px" }}
           >
-            <div className="flex items-center justify-between border-b px-6 py-4 text-sm font-semibold">
-              <div className="flex items-center gap-2 text-xs uppercase tracking-[0.2em] text-cyan-400">
-                <span>•</span>
-                <span>{t("chat.title")}</span>
+            <div className="flex items-center justify-between border-b px-5 py-4">
+              <div className="flex items-center gap-3">
+                <div
+                  className={`flex h-10 w-10 items-center justify-center rounded-2xl text-lg font-semibold ${
+                    isLight ? "bg-cyan-100 text-cyan-700" : "bg-white/10 text-cyan-200"
+                  }`}
+                  aria-hidden
+                >
+                  💬
+                </div>
+                <div className="leading-tight">
+                  <p className="text-xs uppercase tracking-[0.3em] text-cyan-400">{t("chat.title")}</p>
+                  <p className="text-base font-semibold">{t("chat.subtitle")}</p>
+                </div>
               </div>
               <button
                 onClick={() => setOpen(false)}
-                className={`inline-flex h-9 w-9 items-center justify-center rounded-xl border text-lg font-semibold ${
-                  isLight ? "border-slate-200 bg-white text-slate-700" : "border-white/10 bg-white/5 text-white"
+                className={`inline-flex h-9 w-9 items-center justify-center rounded-xl border text-lg font-semibold transition ${
+                  isLight ? "border-slate-200 bg-white text-slate-700 hover:bg-slate-100" : "border-white/10 bg-white/5 text-white hover:bg-white/10"
                 }`}
                 aria-label={t("chat.close")}
               >
@@ -88,20 +97,18 @@ export default function ChatWidget() {
               </button>
             </div>
 
-            <div className="flex h-full flex-col px-4 pb-4 sm:px-6 sm:pb-6">
+            <div className="flex h-[calc(520px-4rem)] flex-col px-5 pb-5">
               <div
-                className={`relative mb-6 flex items-center gap-2 rounded-2xl border px-2 py-2 text-sm font-semibold ${
-                  isLight
-                    ? "border-slate-200 bg-slate-50 text-slate-700"
-                    : "border-white/10 bg-white/5 text-slate-200"
+                className={`relative mb-4 flex items-center rounded-full p-1 text-sm font-semibold ${
+                  isLight ? "bg-slate-100 text-slate-700" : "bg-white/5 text-slate-200"
                 }`}
               >
                 <span
-                  className={`absolute inset-y-2 left-2 rounded-xl transition-all duration-300 ease-in-out ${
-                    isLight ? "bg-cyan-100 shadow-sm shadow-cyan-200" : "bg-white text-slate-900 shadow-cyan-500/30"
+                  className={`absolute inset-y-1 left-1 rounded-full transition-all duration-300 ease-in-out ${
+                    isLight ? "bg-white shadow-sm shadow-cyan-200" : "bg-white/10 shadow-sm shadow-cyan-500/40"
                   }`}
                   style={{
-                    width: "calc(50% - 0.5rem)",
+                    width: "calc(50% - 0.25rem)",
                     transform: `translateX(${tabIndex * 100}%)`,
                   }}
                   aria-hidden
@@ -110,13 +117,13 @@ export default function ChatWidget() {
                   <button
                     key={tab.key}
                     onClick={() => setActiveTab(tab.key)}
-                    className={`relative z-10 flex-1 rounded-xl px-5 py-2.5 text-sm transition-colors ${
+                    className={`relative z-10 flex-1 rounded-full px-4 py-2 text-sm transition-colors ${
                       activeTab === tab.key
                         ? isLight
                           ? "text-cyan-900"
-                          : "text-slate-900"
+                          : "text-white"
                         : isLight
-                        ? "text-slate-700 hover:text-cyan-800"
+                        ? "text-slate-600 hover:text-cyan-800"
                         : "text-slate-200 hover:text-white"
                     }`}
                   >
@@ -126,7 +133,9 @@ export default function ChatWidget() {
                 ))}
               </div>
 
-              <div className="flex-1">
+              <div className="flex-1 rounded-2xl border p-4 shadow-inner shadow-black/10 dark:shadow-black/40"
+                style={{ minHeight: "0" }}
+              >
                 {activeTab === "chat" ? (
                   <form className="flex h-full flex-col gap-4" onSubmit={handleSend}>
                     <div className="space-y-2">
@@ -138,9 +147,7 @@ export default function ChatWidget() {
                         onChange={(e) => setEmail(e.target.value)}
                         placeholder={t("chat.emailPlaceholder")}
                         className={`w-full rounded-2xl border px-4 py-3 text-sm ${
-                          isLight
-                            ? "border-slate-200 bg-white text-slate-900"
-                            : "border-white/10 bg-slate-900/70 text-white"
+                          isLight ? "border-slate-200 bg-white text-slate-900" : "border-white/10 bg-slate-900/70 text-white"
                         }`}
                       />
                     </div>
@@ -153,9 +160,7 @@ export default function ChatWidget() {
                         onChange={(e) => setMessage(e.target.value)}
                         placeholder={t("chat.messagePlaceholder")}
                         className={`h-full w-full rounded-2xl border px-4 py-3 text-sm ${
-                          isLight
-                            ? "border-slate-200 bg-white text-slate-900"
-                            : "border-white/10 bg-slate-900/70 text-white"
+                          isLight ? "border-slate-200 bg-white text-slate-900" : "border-white/10 bg-slate-900/70 text-white"
                         }`}
                       />
                     </div>
@@ -164,9 +169,7 @@ export default function ChatWidget() {
                         type="button"
                         onClick={() => setOpen(false)}
                         className={`rounded-xl border px-4 py-2 text-sm font-semibold transition ${
-                          isLight
-                            ? "border-slate-200 bg-white text-slate-700 hover:bg-slate-100"
-                            : "border-white/10 bg-white/5 text-white hover:bg-white/10"
+                          isLight ? "border-slate-200 bg-white text-slate-700 hover:bg-slate-100" : "border-white/10 bg-white/5 text-white hover:bg-white/10"
                         }`}
                       >
                         {t("chat.close")}
@@ -181,19 +184,20 @@ export default function ChatWidget() {
                     </div>
                   </form>
                 ) : (
-                  <div className="flex h-full flex-col space-y-3">
+                  <div className="flex h-full flex-col space-y-3 overflow-y-auto">
                     <h3 className="text-lg font-semibold">{t("chat.help.title")}</h3>
                     <p className={`text-sm ${isLight ? "text-slate-600" : "text-slate-300"}`}>
                       {t("chat.help.subtitle")}
                     </p>
-                    <div
-                      className={`flex-1 space-y-3 rounded-2xl border p-4 text-sm shadow-inner shadow-black/5 dark:shadow-black/30 ${
-                        isLight ? "border-slate-200 bg-white" : "border-white/10 bg-slate-900/50"
-                      }`}
-                    >
+                    <div className="space-y-3">
                       {Array.isArray(faqItems) &&
                         faqItems.map((item) => (
-                          <div key={item.q} className="rounded-xl bg-white/40 p-3 text-left shadow-sm shadow-black/5 dark:bg-white/5 dark:shadow-black/20">
+                          <div
+                            key={item.q}
+                            className={`rounded-xl p-3 text-left shadow-sm shadow-black/5 dark:shadow-black/20 ${
+                              isLight ? "bg-white" : "bg-white/5"
+                            }`}
+                          >
                             <p className="font-semibold">{item.q}</p>
                             <p className={`mt-1 text-xs ${isLight ? "text-slate-600" : "text-slate-300"}`}>{item.a}</p>
                           </div>
@@ -210,9 +214,7 @@ export default function ChatWidget() {
       <button
         onClick={() => setOpen((prev) => !prev)}
         className={`pointer-events-auto flex h-12 w-12 items-center justify-center rounded-full border text-2xl shadow-lg transition hover:-translate-y-0.5 ${
-          isLight
-            ? "border-slate-200 bg-white text-cyan-600 shadow-cyan-200/60"
-            : "border-white/10 bg-white/5 text-cyan-200 shadow-cyan-500/20"
+          isLight ? "border-slate-200 bg-white text-cyan-600 shadow-cyan-200/60" : "border-white/10 bg-white/5 text-cyan-200 shadow-cyan-500/20"
         }`}
         aria-label={t("chat.open")}
       >

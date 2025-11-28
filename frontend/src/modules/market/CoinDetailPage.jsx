@@ -210,8 +210,8 @@ export default function CoinDetailPage() {
     }
   }
 
-  function saveAlert() {
-    const rawValue = `${alertThreshold}`.trim();
+  function saveAlert(nextThreshold = alertThreshold) {
+    const rawValue = `${nextThreshold}`.trim();
 
     const existing = localStorage.getItem(ALERT_STORAGE_KEY);
     let parsed = {};
@@ -435,7 +435,7 @@ export default function CoinDetailPage() {
                   type="button"
                   onClick={() => {
                     setAlertThreshold("");
-                    saveAlert();
+                    saveAlert("");
                   }}
                   className={`w-full rounded-xl border px-5 py-3 text-sm font-semibold transition ${
                     isLight
@@ -446,7 +446,7 @@ export default function CoinDetailPage() {
                   {t("coin.alerts.clear")}
                 </button>
                 <button
-                  onClick={saveAlert}
+                  onClick={() => saveAlert(alertThreshold)}
                   className="w-full rounded-xl bg-gradient-to-r from-cyan-400 to-blue-600 px-5 py-3 text-sm font-semibold text-slate-950 shadow-lg shadow-cyan-500/30"
                 >
                   {t("coin.alerts.save")}

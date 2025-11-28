@@ -64,12 +64,16 @@ export default function ChatWidget() {
   return (
     <div className="pointer-events-none fixed bottom-4 right-4 z-40 flex flex-col items-end gap-3 sm:bottom-6 sm:right-6">
       {open && (
-        <div className="pointer-events-auto fixed inset-0 z-40 flex items-end justify-end bg-black/40 sm:items-end">
+        <div
+          className="pointer-events-auto fixed inset-0 z-40 flex items-end justify-end bg-black/40 sm:items-end"
+          onClick={() => setOpen(false)}
+        >
           <div
             className={`relative m-4 w-[480px] max-w-[95vw] rounded-3xl border backdrop-blur ${panelBase}`}
             role="dialog"
             aria-modal="true"
             style={{ height: "640px" }}
+            onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center justify-between border-b px-5 py-4">
               <div className="flex items-center gap-3">
@@ -108,8 +112,8 @@ export default function ChatWidget() {
                     isLight ? "bg-white shadow-sm shadow-cyan-200" : "bg-white/10 shadow-sm shadow-cyan-500/40"
                   }`}
                   style={{
-                    width: "calc(50% - 0.25rem)",
-                    transform: `translateX(${tabIndex * 100}%)`,
+                  width: "calc(50% - 0.25rem)",
+                  transform: `translateX(${tabIndex * 100}%)`,
                   }}
                   aria-hidden
                 />
@@ -159,8 +163,10 @@ export default function ChatWidget() {
                         value={message}
                         onChange={(e) => setMessage(e.target.value)}
                         placeholder={t("chat.messagePlaceholder")}
-                        className={`h-full w-full rounded-2xl border px-4 py-3 text-sm ${
-                          isLight ? "border-slate-200 bg-white text-slate-900" : "border-white/10 bg-slate-900/70 text-white"
+                        className={`min-h-[180px] w-full resize-none rounded-2xl border px-4 py-3 text-sm ${
+                          isLight
+                            ? "border-slate-200 bg-white text-slate-900"
+                            : "border-white/10 bg-slate-900/70 text-white"
                         }`}
                       />
                     </div>
@@ -214,7 +220,9 @@ export default function ChatWidget() {
       <button
         onClick={() => setOpen((prev) => !prev)}
         className={`pointer-events-auto flex h-12 w-12 items-center justify-center rounded-full border text-2xl shadow-lg transition hover:-translate-y-0.5 ${
-          isLight ? "border-slate-200 bg-white text-cyan-600 shadow-cyan-200/60" : "border-white/10 bg-white/5 text-cyan-200 shadow-cyan-500/20"
+          isLight
+            ? "border-slate-200 bg-gradient-to-br from-cyan-200 via-cyan-300 to-blue-400 text-slate-900 shadow-cyan-300/80"
+            : "border-white/10 bg-gradient-to-br from-cyan-500/70 via-blue-500/70 to-blue-600/80 text-white shadow-cyan-500/60"
         }`}
         aria-label={t("chat.open")}
       >

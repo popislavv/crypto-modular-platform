@@ -112,8 +112,8 @@ export default function ChatWidget() {
                     isLight ? "bg-white shadow-sm shadow-cyan-200" : "bg-white/10 shadow-sm shadow-cyan-500/40"
                   }`}
                   style={{
-                  width: "calc(50% - 0.25rem)",
-                  transform: `translateX(${tabIndex * 100}%)`,
+                    width: "calc(50% - 0.25rem)",
+                    transform: `translateX(${tabIndex * 100}%)`,
                   }}
                   aria-hidden
                 />

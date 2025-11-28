@@ -19,31 +19,32 @@ const DEFAULTS = {
   language: "en",
 };
 
+const readSetting = (key, fallback, transform) => {
+  const stored = localStorage.getItem(key);
+  if (stored === null || stored === undefined) return fallback;
+  return transform ? transform(stored) : stored;
+};
+
 export function SettingsProvider({ children }) {
-  const [refreshInterval, setRefreshInterval] = useState(() => {
-    const saved = localStorage.getItem(STORAGE_KEYS.refreshInterval);
-    return saved ? Number(saved) || DEFAULTS.refreshInterval : DEFAULTS.refreshInterval;
-  });
+  const [refreshInterval, setRefreshInterval] = useState(() =>
+    readSetting(STORAGE_KEYS.refreshInterval, DEFAULTS.refreshInterval, (value) => Number(value) || DEFAULTS.refreshInterval)
+  );
 
-  const [chartRange, setChartRange] = useState(() => {
-    const saved = localStorage.getItem(STORAGE_KEYS.chartRange);
-    return saved || DEFAULTS.chartRange;
-  });
+  const [chartRange, setChartRange] = useState(() =>
+    readSetting(STORAGE_KEYS.chartRange, DEFAULTS.chartRange)
+  );
 
-  const [currency, setCurrency] = useState(() => {
-    const saved = localStorage.getItem(STORAGE_KEYS.currency);
-    return saved || DEFAULTS.currency;
-  });
+  const [currency, setCurrency] = useState(() =>
+    readSetting(STORAGE_KEYS.currency, DEFAULTS.currency)
+  );
 
-  const [theme, setTheme] = useState(() => {
-    const saved = localStorage.getItem(STORAGE_KEYS.theme);
-    return saved || DEFAULTS.theme;
-  });
+  const [theme, setTheme] = useState(() =>
+    readSetting(STORAGE_KEYS.theme, DEFAULTS.theme)
+  );
 
-  const [language, setLanguage] = useState(() => {
-    const saved = localStorage.getItem(STORAGE_KEYS.language);
-    return saved || DEFAULTS.language;
-  });
+  const [language, setLanguage] = useState(() =>
+    readSetting(STORAGE_KEYS.language, DEFAULTS.language)
+  );
 
   useEffect(() => {
     localStorage.setItem(STORAGE_KEYS.refreshInterval, String(refreshInterval));

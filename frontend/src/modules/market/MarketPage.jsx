@@ -30,8 +30,7 @@ export default function MarketPage() {
     [t]
   );
   const activeSegmentIndex = Math.max(0, segmentOptions.findIndex((o) => o.key === viewMode));
-  const segmentWidth = 100 / segmentOptions.length;
-  const segmentTranslate = `translateX(calc(${activeSegmentIndex} * (100% / ${segmentOptions.length})))`;
+  const segmentLeft = `calc(${activeSegmentIndex} * (100% / ${segmentOptions.length}))`;
 
   async function loadData() {
     try {
@@ -236,14 +235,14 @@ export default function MarketPage() {
               }`}
             >
               <span
-                className={`absolute inset-y-1 left-1 rounded-full transition-all duration-300 ease-in-out ${
+                className={`absolute inset-y-1 left-1 rounded-full ${
                   isLight
                     ? "bg-cyan-100 shadow-sm shadow-cyan-200"
                     : "bg-white text-slate-900 shadow-sm shadow-cyan-500/40"
                 }`}
                 style={{
-                  width: `calc((100% - 0.5rem) / ${segmentOptions.length})`,
-                  transform: segmentTranslate,
+                  width: `calc(100% / ${segmentOptions.length})`,
+                  left: segmentLeft,
                 }}
                 aria-hidden
               />

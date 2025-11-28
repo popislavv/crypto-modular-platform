@@ -66,10 +66,10 @@ export default function ChatWidget() {
       {open && (
         <div className="pointer-events-auto fixed inset-0 z-40 flex items-end justify-end bg-black/40 sm:items-end">
           <div
-            className={`relative m-4 w-[380px] max-w-[95vw] rounded-3xl border backdrop-blur ${panelBase}`}
+            className={`relative m-4 w-[480px] max-w-[95vw] rounded-3xl border backdrop-blur ${panelBase}`}
             role="dialog"
             aria-modal="true"
-            style={{ height: "520px" }}
+            style={{ height: "640px" }}
           >
             <div className="flex items-center justify-between border-b px-5 py-4">
               <div className="flex items-center gap-3">
@@ -97,9 +97,9 @@ export default function ChatWidget() {
               </button>
             </div>
 
-            <div className="flex h-[calc(520px-4rem)] flex-col px-5 pb-5">
+            <div className="flex h-[calc(640px-4rem)] flex-col px-5 pb-5">
               <div
-                className={`relative mb-4 flex items-center rounded-full p-1 text-sm font-semibold ${
+                className={`relative mb-5 flex items-center rounded-full p-1.5 text-sm font-semibold ${
                   isLight ? "bg-slate-100 text-slate-700" : "bg-white/5 text-slate-200"
                 }`}
               >
@@ -117,7 +117,7 @@ export default function ChatWidget() {
                   <button
                     key={tab.key}
                     onClick={() => setActiveTab(tab.key)}
-                    className={`relative z-10 flex-1 rounded-full px-4 py-2 text-sm transition-colors ${
+                    className={`relative z-10 flex-1 rounded-full px-5 py-2.5 text-sm transition-colors ${
                       activeTab === tab.key
                         ? isLight
                           ? "text-cyan-900"
@@ -133,7 +133,7 @@ export default function ChatWidget() {
                 ))}
               </div>
 
-              <div className="flex-1 rounded-2xl border p-4 shadow-inner shadow-black/10 dark:shadow-black/40"
+              <div className="flex-1 rounded-2xl border p-5 shadow-inner shadow-black/10 dark:shadow-black/40"
                 style={{ minHeight: "0" }}
               >
                 {activeTab === "chat" ? (

@@ -38,7 +38,8 @@
     "loading": "Učitavanje tržišta...",
     "segment": {
       "top10": "Top 10",
-      "all": "Sve"
+      "all": "Sve",
+      "favorites": "Omiljeni"
     },
     "labels": {
       "marketCap": "Tržišna kapitalizacija"
@@ -52,10 +53,13 @@
         "price": "Cena",
         "change": "24h %",
         "marketCap": "Tržišna kapitalizacija",
-        "volume": "Obim 24h"
+        "volume": "Obim 24h",
+        "favorite": "Fav"
       },
-      "empty": "Nema podataka za prikaz."
-    }
+      "empty": "Nema podataka za prikaz.",
+      "favoriteAction": "Dodaj/ukloni omiljeni"
+    },
+    "showFavorites": "Prikaži samo omiljene"
   },
   "coin": {
     "loading": "Učitavanje podataka o coinu...",
@@ -75,6 +79,7 @@
       "volume24h": "Obim 24h"
     },
     "priceAction": "Kretanje cene",
+    "favoriteToggle": "Dodaj/ukloni omiljeni",
     "alerts": {
       "title": "Cenovna upozorenja",
       "subtitle": "Sačuvaj prag i obavestićemo te kada ga živa cena probije.",
@@ -83,8 +88,10 @@
       "below": "Upozori kada cena padne ispod",
       "threshold": "Prag cene (USD)",
       "placeholder": "npr. 65000",
+      "clear": "Obriši alert",
       "save": "Sačuvaj upozorenje",
       "invalid": "Unesi ispravan prag cene.",
+      "cleared": "Alert je uklonjen.",
       "saved": "Upozorenje je sačuvano.",
       "hit": "{{coin}} je prešao prag {{threshold}} ({{direction}})"
     },
@@ -176,5 +183,53 @@
     "langEnglish": "Engleski",
     "langSerbian": "Srpski",
     "languageHelp": "Promeni jezik interfejsa i zapamti izbor."
+  },
+  "chat": {
+    "title": "Čet",
+    "subtitle": "Pišite nam",
+    "open": "Otvori čet",
+    "close": "Zatvori",
+    "tabs": {
+      "chat": "Čet",
+      "help": "Pomoć"
+    },
+    "emailLabel": "Email",
+    "emailPlaceholder": "vas@email.com",
+    "message": "Poruka",
+    "messagePlaceholder": "Kako možemo da pomognemo?",
+    "send": "Pošalji",
+    "sending": "Slanje...",
+    "success": "Poruka je poslata. Uskoro ćemo se javiti!",
+    "error": "Poruku trenutno nije moguće poslati.",
+    "validation": {
+      "required": "Email i poruka su obavezni.",
+      "email": "Unesite validan email."
+    },
+    "help": {
+      "title": "Često postavljana pitanja",
+      "subtitle": "Brzi odgovori na uobičajena pitanja.",
+      "items": [
+        {
+          "q": "Kako rade price alerti?",
+          "a": "Sačuvajte prag na bilo kom coinu. Obavestićemo vas kada cena pređe taj nivo."
+        },
+        {
+          "q": "Kako menjam jezik?",
+          "a": "Otvorite Settings, izaberite engleski ili srpski, snimite i UI se automatski osvežava."
+        },
+        {
+          "q": "Šta predstavlja portfolio mix?",
+          "a": "Prikazuje udeo svakog tokena u vašem učitanom balansu."
+        },
+        {
+          "q": "Kako dodajem coin u omiljene?",
+          "a": "Kliknite na zvezdicu u tabeli ili na stranici coina da ga dodate/uklonite iz watchliste."
+        },
+        {
+          "q": "Kako filtriram samo omiljene?",
+          "a": "Koristite slajder na Market stranici da pređete na Favorites prikaz."
+        }
+      ]
+    }
   }
 }

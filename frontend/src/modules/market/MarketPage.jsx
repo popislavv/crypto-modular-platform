@@ -5,20 +5,32 @@ import { useSettings } from "../../context/SettingsContext";
 import { formatCompact, formatCurrency } from "../../utils/formatters";
 import { useAlerts } from "../../context/AlertContext";
 import { useTranslation } from "react-i18next";
+import { useFavorites } from "../../context/FavoritesContext";
 
 export default function MarketPage() {
   const [coins, setCoins] = useState([]);
   const [filteredCoins, setFilteredCoins] = useState([]);
   const [search, setSearch] = useState("");
-  const [viewMode, setViewMode] = useState("top10"); // "top10" | "all"
+  const [viewMode, setViewMode] = useState("top10"); // "top10" | "all" | "favorites"
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
   const navigate = useNavigate();
   const { currency, theme } = useSettings();
   const { evaluatePriceAlerts } = useAlerts();
+  const { favorites, toggleFavorite } = useFavorites();
   const { t } = useTranslation();
   const isLight = theme === "light";
+  const segmentOptions = useMemo(
+    () => [
+      { key: "top10", label: t("market.segment.top10") },
+      { key: "all", label: t("market.segment.all") },
+      { key: "favorites", label: t("market.segment.favorites") },
+    ],
+    [t]
+  );
+  const activeSegmentIndex = Math.max(0, segmentOptions.findIndex((o) => o.key === viewMode));
+  const segmentLeft = `calc(${activeSegmentIndex} * (100% / ${segmentOptions.length}))`;
 
   async function loadData() {
     try {
@@ -60,10 +72,36 @@ export default function MarketPage() {
 
     if (viewMode === "top10") {
       list = list.slice(0, 10);
+    } else if (viewMode === "favorites") {
+      list = list.filter((c) => favorites.includes(c.id));
     }
 
     setFilteredCoins(list);
-  }, [coins, search, viewMode]);
+  }, [coins, search, viewMode, favorites]);
+
+  const metrics = useMemo(() => {
+    const totalMarketCap = coins.reduce((sum, c) => sum + (c.market_cap || 0), 0);
+    const totalVolume = coins.reduce((sum, c) => sum + (c.total_volume || 0), 0);
+    const btc = coins.find((c) => c.id === "bitcoin");
+    const eth = coins.find((c) => c.id === "ethereum");
+    const dominance = totalMarketCap > 0 && btc ? (btc.market_cap / totalMarketCap) * 100 : null;
+    const ethDominance = totalMarketCap > 0 && eth ? (eth.market_cap / totalMarketCap) * 100 : null;
+
+    return { totalMarketCap, totalVolume, dominance, ethDominance };
+  }, [coins]);
+
+  const topMovers = useMemo(() => {
+    return [...filteredCoins]
+      .sort((a, b) => (b.price_change_percentage_24h || 0) - (a.price_change_percentage_24h || 0))
+      .slice(0, 6);
+  }, [filteredCoins]);
+
+  const heroTone = isLight
+    ? "glass-panel border border-slate-200/80 bg-gradient-to-br from-white via-white to-slate-100 text-slate-900"
+    : "glass-panel border border-white/10 bg-gradient-to-br from-slate-900/80 via-slate-900/50 to-slate-950/70 text-white";
+  const chipText = isLight ? "text-slate-700" : "text-slate-200";
+  const chipBorder = isLight ? "border-slate-200" : "border-white/10";
+  const chipBg = isLight ? "bg-white/80" : "bg-white/5";
 
   const metrics = useMemo(() => {
     const totalMarketCap = coins.reduce((sum, c) => sum + (c.market_cap || 0), 0);
@@ -212,34 +250,44 @@ export default function MarketPage() {
               onChange={(e) => setSearch(e.target.value)}
             />
           </div>
-
-          <div
-            className={`inline-flex rounded-full border p-1 text-xs font-semibold shadow-inner ${
-              isLight
-                ? "border-slate-200 bg-white shadow-slate-200/60"
-                : "border-white/10 bg-slate-900/70 shadow-black/30"
-            }`}
-          >
-              {[
-                { key: "top10", label: t("market.segment.top10") },
-                { key: "all", label: t("market.segment.all") },
-              ].map((option) => (
+          <div className="flex flex-wrap items-center gap-3">
+            <div
+              className={`relative inline-flex w-full min-w-[340px] max-w-2xl items-center rounded-full border p-1 text-sm font-semibold shadow-inner ${
+                isLight
+                  ? "border-slate-200 bg-white shadow-slate-200/60"
+                  : "border-white/10 bg-slate-900/70 shadow-black/30"
+              }`}
+            >
+              <span
+                className={`absolute inset-y-1 left-1 rounded-full ${
+                  isLight
+                    ? "bg-cyan-100 shadow-sm shadow-cyan-200"
+                    : "bg-white text-slate-900 shadow-sm shadow-cyan-500/40"
+                }`}
+                style={{
+                  width: `calc(100% / ${segmentOptions.length})`,
+                  left: segmentLeft,
+                }}
+                aria-hidden
+              />
+              {segmentOptions.map((option) => (
                 <button
                   key={option.key}
                   onClick={() => setViewMode(option.key)}
-                  className={`rounded-full px-4 py-2 transition ${
+                  className={`relative z-10 flex-1 rounded-full px-6 py-2.5 transition-colors ${
                     viewMode === option.key
                       ? isLight
-                        ? "bg-cyan-100 text-cyan-900 shadow-sm shadow-cyan-300/40"
-                        : "bg-white text-slate-900 shadow-sm shadow-cyan-500/30"
+                        ? "text-cyan-900"
+                        : "text-slate-900"
                       : isLight
                       ? "text-slate-700 hover:text-cyan-800"
                       : "text-slate-200 hover:text-white"
                   }`}
                 >
-                {option.label}
-              </button>
-            ))}
+                  {option.label}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
 
@@ -320,6 +368,7 @@ export default function MarketPage() {
                   <th className="px-3 py-3 text-right">{t("market.table.headers.change")}</th>
                   <th className="px-3 py-3 text-right">{t("market.table.headers.marketCap")}</th>
                   <th className="px-3 py-3 text-right">{t("market.table.headers.volume")}</th>
+                  <th className="px-3 py-3 text-right">{t("market.table.headers.favorite")}</th>
                 </tr>
               </thead>
               <tbody>
@@ -369,6 +418,24 @@ export default function MarketPage() {
                       </td>
                       <td className={`px-3 py-3 text-right ${isLight ? "text-slate-900" : "text-white"}`}>
                         {formatCompact(coin.total_volume, currency)}
+                      </td>
+                      <td className="px-3 py-3 text-right">
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            toggleFavorite(coin.id);
+                          }}
+                          className={`inline-flex h-9 w-9 items-center justify-center rounded-full border text-lg transition hover:-translate-y-0.5 ${
+                            favorites.includes(coin.id)
+                              ? "border-amber-300 bg-amber-100 text-amber-500"
+                              : isLight
+                              ? "border-slate-200 bg-white text-slate-500 hover:text-amber-500"
+                              : "border-white/10 bg-white/5 text-slate-300 hover:text-amber-400"
+                          }`}
+                          aria-label={t("market.table.favoriteAction")}
+                        >
+                          {favorites.includes(coin.id) ? "★" : "☆"}
+                        </button>
                       </td>
                     </tr>
                   );

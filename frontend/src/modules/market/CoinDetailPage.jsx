@@ -6,6 +6,7 @@ import { formatCurrency } from "../../utils/formatters";
 import Toast from "../../components/Toast";
 import { useAlerts } from "../../context/AlertContext";
 import { useTranslation } from "react-i18next";
+import { useFavorites } from "../../context/FavoritesContext";
 import {
   AreaChart,
   Area,
@@ -32,6 +33,7 @@ export default function CoinDetailPage() {
   const { chartRange, currency, theme } = useSettings();
   const { evaluatePriceAlerts } = useAlerts();
   const { t } = useTranslation();
+  const { favorites, toggleFavorite } = useFavorites();
   const [coin, setCoin] = useState(null);
   const [chartData, setChartData] = useState([]);
   const [range, setRange] = useState(chartRange || "7d");
@@ -89,11 +91,6 @@ export default function CoinDetailPage() {
 
     loadCoin();
   }, [id, t]);
-
-  useEffect(() => {
-    if (!coin) return;
-    evaluatePriceAlerts([coin], currency);
-  }, [coin, currency, evaluatePriceAlerts]);
 
   useEffect(() => {
     if (!coin) return;
@@ -189,12 +186,33 @@ export default function CoinDetailPage() {
     ];
   }, [coin, currency, isLight, t]);
 
-  function saveAlert() {
-    const thresholdValue = Number(alertThreshold);
-    if (!thresholdValue) {
-      setToast({ message: t("coin.alerts.invalid"), variant: "warning" });
-      return;
+  function clearAlertState(keyPrefix) {
+    try {
+      const triggeredRaw = localStorage.getItem(ALERT_TRIGGER_STATE_KEY);
+      const triggeredState = triggeredRaw ? JSON.parse(triggeredRaw) : {};
+      Object.keys(triggeredState).forEach((key) => {
+        if (key.startsWith(keyPrefix)) {
+          delete triggeredState[key];
+        }
+      });
+      localStorage.setItem(ALERT_TRIGGER_STATE_KEY, JSON.stringify(triggeredState));
+
+      const dismissedRaw = localStorage.getItem("priceAlertDismissedState");
+      const dismissedState = dismissedRaw ? JSON.parse(dismissedRaw) : {};
+      Object.keys(dismissedState).forEach((key) => {
+        if (key.startsWith(keyPrefix)) {
+          delete dismissedState[key];
+        }
+      });
+      localStorage.setItem("priceAlertDismissedState", JSON.stringify(dismissedState));
+    } catch (e) {
+      // best-effort cleanup
     }
+    setToast({ message: t("coin.alerts.saved"), variant: "success" });
+  }
+
+  function saveAlert(nextThreshold = alertThreshold) {
+    const rawValue = `${nextThreshold}`.trim();
 
     const existing = localStorage.getItem(ALERT_STORAGE_KEY);
     let parsed = {};
@@ -206,25 +224,23 @@ export default function CoinDetailPage() {
       }
     }
 
+    if (rawValue === "") {
+      delete parsed[id];
+      localStorage.setItem(ALERT_STORAGE_KEY, JSON.stringify(parsed));
+      clearAlertState(`${id}-`);
+      setToast({ message: t("coin.alerts.cleared"), variant: "success" });
+      return;
+    }
+
+    const thresholdValue = Number(rawValue);
+    if (!Number.isFinite(thresholdValue) || thresholdValue <= 0) {
+      setToast({ message: t("coin.alerts.invalid"), variant: "warning" });
+      return;
+    }
+
     parsed[id] = { direction: alertDirection, threshold: thresholdValue };
     localStorage.setItem(ALERT_STORAGE_KEY, JSON.stringify(parsed));
-    try {
-      const triggeredRaw = localStorage.getItem(ALERT_TRIGGER_STATE_KEY);
-      const triggeredState = triggeredRaw ? JSON.parse(triggeredRaw) : {};
-      const key = `${id}-${alertDirection}-${thresholdValue}`;
-      if (triggeredState[key]) {
-        delete triggeredState[key];
-        localStorage.setItem(ALERT_TRIGGER_STATE_KEY, JSON.stringify(triggeredState));
-      }
-      const dismissedRaw = localStorage.getItem("priceAlertDismissedState");
-      const dismissedState = dismissedRaw ? JSON.parse(dismissedRaw) : {};
-      if (dismissedState[key]) {
-        delete dismissedState[key];
-        localStorage.setItem("priceAlertDismissedState", JSON.stringify(dismissedState));
-      }
-    } catch (e) {
-      // ignore cleanup failures
-    }
+    clearAlertState(`${id}-${alertDirection}-${thresholdValue}`);
     setToast({ message: t("coin.alerts.saved"), variant: "success" });
   }
 
@@ -283,16 +299,33 @@ export default function CoinDetailPage() {
               >
                 <img src={coin.image?.large} alt={coin.name} className="h-12 w-12 rounded-full" />
               </div>
-              <div>
-                <p className={`text-xs uppercase tracking-[0.2em] ${isLight ? "text-slate-500" : "text-slate-400"}`}>
-                  {coin.symbol}
-                </p>
-                <h1 className="text-3xl font-bold">{coin.name}</h1>
-                {coin.market_data && (
-                  <p className={`text-xl font-semibold ${isLight ? "text-emerald-600" : "text-emerald-300"}`}>
-                    {formatCurrency(coin.market_data.current_price.usd, currency)}
+              <div className="flex items-start gap-3">
+                <div>
+                  <p className={`text-xs uppercase tracking-[0.2em] ${isLight ? "text-slate-500" : "text-slate-400"}`}>
+                    {coin.symbol}
                   </p>
-                )}
+                  <div className="flex items-center gap-3">
+                    <h1 className="text-3xl font-bold">{coin.name}</h1>
+                    <button
+                      onClick={() => toggleFavorite(coin.id)}
+                      className={`inline-flex h-10 w-10 items-center justify-center rounded-full border text-xl transition hover:-translate-y-0.5 ${
+                        favorites.includes(coin.id)
+                          ? "border-amber-300 bg-amber-100 text-amber-500"
+                          : isLight
+                          ? "border-slate-200 bg-white text-slate-500 hover:text-amber-500"
+                          : "border-white/15 bg-white/5 text-slate-200 hover:text-amber-300"
+                      }`}
+                      aria-label={t("coin.favoriteToggle")}
+                    >
+                      {favorites.includes(coin.id) ? "★" : "☆"}
+                    </button>
+                  </div>
+                  {coin.market_data && (
+                    <p className={`text-xl font-semibold ${isLight ? "text-emerald-600" : "text-emerald-300"}`}>
+                      {formatCurrency(coin.market_data.current_price.usd, currency)}
+                    </p>
+                  )}
+                </div>
               </div>
             </div>
 
@@ -363,13 +396,13 @@ export default function CoinDetailPage() {
                 </div>
               )}
             </div>
-            <div className="grid gap-3 md:grid-cols-3">
-              <label className="flex flex-col gap-2 text-sm font-semibold">
+            <div className="grid gap-3 md:grid-cols-4 md:items-end">
+              <label className="flex flex-col gap-2 text-sm font-semibold md:col-span-1">
                 <span className={isLight ? "text-slate-700" : "text-slate-200"}>{t("coin.alerts.directionLabel")}</span>
                 <select
                   value={alertDirection}
                   onChange={(e) => setAlertDirection(e.target.value)}
-                  className={`rounded-xl border px-3 py-2 text-sm font-semibold ${
+                  className={`rounded-xl border px-3 py-3 text-sm font-semibold ${
                     isLight
                       ? "border-slate-200 bg-white text-slate-900"
                       : "border-white/10 bg-slate-900/70 text-white"
@@ -385,27 +418,52 @@ export default function CoinDetailPage() {
               </label>
               <label className="flex flex-col gap-2 text-sm font-semibold md:col-span-2">
                 <span className={isLight ? "text-slate-700" : "text-slate-200"}>{t("coin.alerts.threshold")}</span>
-                <div className="flex gap-2">
-                  <input
-                    type="number"
-                    min={0}
-                    value={alertThreshold}
-                    onChange={(e) => setAlertThreshold(e.target.value)}
-                    className={`w-full rounded-xl border px-3 py-2 text-sm ${
-                      isLight
-                        ? "border-slate-200 bg-white text-slate-900"
-                        : "border-white/10 bg-slate-900/70 text-white"
-                    }`}
-                    placeholder={t("coin.alerts.placeholder")}
-                  />
-                  <button
-                    onClick={saveAlert}
-                    className="rounded-xl bg-gradient-to-r from-cyan-400 to-blue-600 px-4 py-2 text-sm font-semibold text-slate-950 shadow-lg shadow-cyan-500/30"
-                  >
-                    {t("coin.alerts.save")}
-                  </button>
-                </div>
+                <input
+                  type="number"
+                  min={0}
+                  value={alertThreshold}
+                  onChange={(e) => setAlertThreshold(e.target.value)}
+                  className={`w-full rounded-xl border px-3 py-3 text-sm ${
+                    isLight
+                      ? "border-slate-200 bg-white text-slate-900"
+                      : "border-white/10 bg-slate-900/70 text-white"
+                  }`}
+                  placeholder={t("coin.alerts.placeholder")}
+                />
               </label>
+              <div className="flex flex-col gap-2 md:col-span-1">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setAlertThreshold("");
+                    saveAlert("");
+                  }}
+                  className={`w-full rounded-xl border px-5 py-3 text-sm font-semibold transition ${
+                    isLight
+                      ? "border-slate-200 bg-white text-slate-700 hover:bg-slate-100"
+                      : "border-white/10 bg-white/5 text-white hover:bg-white/10"
+                  }`}
+                >
+                  {t("coin.alerts.clear")}
+                </button>
+                <button
+                  onClick={() => saveAlert(alertThreshold)}
+                  className="w-full rounded-xl bg-gradient-to-r from-cyan-400 to-blue-600 px-5 py-3 text-sm font-semibold text-slate-950 shadow-lg shadow-cyan-500/30"
+                >
+                  {t("coin.alerts.save")}
+                </button>
+              </div>
+              {alertHit && (
+                <div
+                  className={`rounded-xl border px-3 py-2 text-sm font-semibold ${
+                    isLight
+                      ? "border-amber-200 bg-amber-50 text-amber-800"
+                      : "border-amber-400/40 bg-amber-500/10 text-amber-200"
+                  }`}
+                >
+                  {alertHit}
+                </div>
+              )}
             </div>
           </div>
 

@@ -9,5 +9,9 @@ export default defineConfig({
   ],
   resolve: {
     dedupe: ['react', 'react-dom'],
+    alias: {
+      'react-i18next': '/src/lib/react-i18next-stub.jsx',
+      i18next: '/src/lib/i18next-stub.js',
+    },
   },
 })

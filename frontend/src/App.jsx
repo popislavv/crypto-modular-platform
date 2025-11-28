@@ -8,6 +8,8 @@ import SettingsPage from "./modules/settings/SettingsPage.jsx";
 import CoinDetailPage from "./modules/market/CoinDetailPage";
 import { SettingsProvider, useSettings } from "./context/SettingsContext";
 import { AlertProvider, useAlerts } from "./context/AlertContext";
+import { FavoritesProvider } from "./context/FavoritesContext";
+import ChatWidget from "./components/ChatWidget";
 import Toast from "./components/Toast";
 
 function Shell() {
@@ -189,6 +191,8 @@ function Shell() {
           />
         ))}
       </div>
+
+      <ChatWidget />
     </div>
   );
 }
@@ -198,7 +202,9 @@ function App() {
     <BrowserRouter>
       <SettingsProvider>
         <AlertProvider>
-          <Shell />
+          <FavoritesProvider>
+            <Shell />
+          </FavoritesProvider>
         </AlertProvider>
       </SettingsProvider>
     </BrowserRouter>

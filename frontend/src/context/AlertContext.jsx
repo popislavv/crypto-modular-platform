@@ -7,25 +7,20 @@ const ALERT_STORAGE_KEY = "priceAlerts";
 const ALERT_TRIGGER_STATE_KEY = "priceAlertTriggeredState";
 const ALERT_DISMISSED_STATE_KEY = "priceAlertDismissedState";
 
+const readStoredJson = (key) => {
+  try {
+    const raw = localStorage.getItem(key);
+    return raw ? JSON.parse(raw) : {};
+  } catch (e) {
+    return {};
+  }
+};
+
 export function AlertProvider({ children }) {
   const { t } = useTranslation();
   const [notifications, setNotifications] = useState([]);
-  const [triggeredAlerts, setTriggeredAlerts] = useState(() => {
-    try {
-      const raw = localStorage.getItem(ALERT_TRIGGER_STATE_KEY);
-      return raw ? JSON.parse(raw) : {};
-    } catch (e) {
-      return {};
-    }
-  });
-  const [dismissedAlerts, setDismissedAlerts] = useState(() => {
-    try {
-      const raw = localStorage.getItem(ALERT_DISMISSED_STATE_KEY);
-      return raw ? JSON.parse(raw) : {};
-    } catch (e) {
-      return {};
-    }
-  });
+  const [triggeredAlerts, setTriggeredAlerts] = useState(() => readStoredJson(ALERT_TRIGGER_STATE_KEY));
+  const [dismissedAlerts, setDismissedAlerts] = useState(() => readStoredJson(ALERT_DISMISSED_STATE_KEY));
 
   useEffect(() => {
     try {
@@ -63,15 +58,9 @@ export function AlertProvider({ children }) {
   const evaluatePriceAlerts = useCallback(
     (coins, currency = "USD") => {
       if (!coins?.length) return;
-      const raw = localStorage.getItem(ALERT_STORAGE_KEY);
-      if (!raw) return;
 
-      let savedAlerts = {};
-      try {
-        savedAlerts = JSON.parse(raw) || {};
-      } catch (e) {
-        savedAlerts = {};
-      }
+      const savedAlerts = readStoredJson(ALERT_STORAGE_KEY);
+      if (!Object.keys(savedAlerts).length) return;
 
       const nextTriggered = { ...triggeredAlerts };
       let changed = false;

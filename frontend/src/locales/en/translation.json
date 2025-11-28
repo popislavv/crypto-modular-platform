@@ -88,8 +88,10 @@
       "below": "Alert when price goes below",
       "threshold": "Price threshold (USD)",
       "placeholder": "e.g. 65000",
+      "clear": "Clear alert",
       "save": "Save alert",
       "invalid": "Enter a valid price threshold.",
+      "cleared": "Alert removed.",
       "saved": "Alert preference saved.",
       "hit": "{{coin}} price crossed {{threshold}} ({{direction}})"
     },

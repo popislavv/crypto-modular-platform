@@ -67,9 +67,10 @@ export default function ChatWidget() {
         <div className="pointer-events-auto fixed inset-0 z-40 flex items-end justify-end sm:items-center">
           <div className="absolute inset-0 bg-black/30" onClick={() => setOpen(false)} />
           <div
-            className={`relative m-4 w-full max-w-2xl rounded-3xl border backdrop-blur ${panelBase}`}
+            className={`relative m-4 w-full max-w-3xl rounded-3xl border backdrop-blur ${panelBase}`}
             role="dialog"
             aria-modal="true"
+            style={{ minHeight: "520px", width: "min(95vw, 820px)" }}
           >
             <div className="flex items-center justify-between border-b px-6 py-4 text-sm font-semibold">
               <div className="flex items-center gap-2 text-xs uppercase tracking-[0.2em] text-cyan-400">
@@ -87,26 +88,29 @@ export default function ChatWidget() {
               </button>
             </div>
 
-            <div className="px-4 pb-4 sm:px-6 sm:pb-6">
+            <div className="flex h-full flex-col px-4 pb-4 sm:px-6 sm:pb-6">
               <div
-                className={`relative mb-4 flex items-center rounded-full border p-1 text-xs font-semibold ${
+                className={`relative mb-6 flex items-center gap-2 rounded-2xl border px-2 py-2 text-sm font-semibold ${
                   isLight
                     ? "border-slate-200 bg-slate-50 text-slate-700"
                     : "border-white/10 bg-white/5 text-slate-200"
                 }`}
               >
                 <span
-                  className={`absolute inset-y-1 left-1 w-1/2 rounded-full transition-transform duration-300 ease-in-out ${
+                  className={`absolute inset-y-2 left-2 rounded-xl transition-all duration-300 ease-in-out ${
                     isLight ? "bg-cyan-100 shadow-sm shadow-cyan-200" : "bg-white text-slate-900 shadow-cyan-500/30"
                   }`}
-                  style={{ transform: `translateX(${tabIndex * 100}%)` }}
+                  style={{
+                    width: "calc(50% - 0.5rem)",
+                    transform: `translateX(${tabIndex * 100}%)`,
+                  }}
                   aria-hidden
                 />
                 {TAB_OPTIONS.map((tab) => (
                   <button
                     key={tab.key}
                     onClick={() => setActiveTab(tab.key)}
-                    className={`relative z-10 flex-1 rounded-full px-4 py-2 text-sm transition-colors ${
+                    className={`relative z-10 flex-1 rounded-xl px-5 py-2.5 text-sm transition-colors ${
                       activeTab === tab.key
                         ? isLight
                           ? "text-cyan-900"
@@ -122,80 +126,82 @@ export default function ChatWidget() {
                 ))}
               </div>
 
-              {activeTab === "chat" ? (
-                <form className="space-y-4" onSubmit={handleSend}>
-                  <div className="space-y-2">
-                    <label className="block text-sm font-semibold">{t("chat.emailLabel")}</label>
-                    <input
-                      type="email"
-                      required
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      placeholder={t("chat.emailPlaceholder")}
-                      className={`w-full rounded-2xl border px-4 py-3 text-sm ${
-                        isLight
-                          ? "border-slate-200 bg-white text-slate-900"
-                          : "border-white/10 bg-slate-900/70 text-white"
-                      }`}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <label className="block text-sm font-semibold">{t("chat.message")}</label>
-                    <textarea
-                      rows={5}
-                      required
-                      value={message}
-                      onChange={(e) => setMessage(e.target.value)}
-                      placeholder={t("chat.messagePlaceholder")}
-                      className={`w-full rounded-2xl border px-4 py-3 text-sm ${
-                        isLight
-                          ? "border-slate-200 bg-white text-slate-900"
-                          : "border-white/10 bg-slate-900/70 text-white"
-                      }`}
-                    />
-                  </div>
-                  <div className="flex items-center justify-end gap-3">
-                    <button
-                      type="button"
-                      onClick={() => setOpen(false)}
-                      className={`rounded-xl border px-4 py-2 text-sm font-semibold transition ${
-                        isLight
-                          ? "border-slate-200 bg-white text-slate-700 hover:bg-slate-100"
-                          : "border-white/10 bg-white/5 text-white hover:bg-white/10"
+              <div className="flex-1">
+                {activeTab === "chat" ? (
+                  <form className="flex h-full flex-col gap-4" onSubmit={handleSend}>
+                    <div className="space-y-2">
+                      <label className="block text-sm font-semibold">{t("chat.emailLabel")}</label>
+                      <input
+                        type="email"
+                        required
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        placeholder={t("chat.emailPlaceholder")}
+                        className={`w-full rounded-2xl border px-4 py-3 text-sm ${
+                          isLight
+                            ? "border-slate-200 bg-white text-slate-900"
+                            : "border-white/10 bg-slate-900/70 text-white"
+                        }`}
+                      />
+                    </div>
+                    <div className="flex-1 space-y-2">
+                      <label className="block text-sm font-semibold">{t("chat.message")}</label>
+                      <textarea
+                        rows={6}
+                        required
+                        value={message}
+                        onChange={(e) => setMessage(e.target.value)}
+                        placeholder={t("chat.messagePlaceholder")}
+                        className={`h-full w-full rounded-2xl border px-4 py-3 text-sm ${
+                          isLight
+                            ? "border-slate-200 bg-white text-slate-900"
+                            : "border-white/10 bg-slate-900/70 text-white"
+                        }`}
+                      />
+                    </div>
+                    <div className="flex items-center justify-end gap-3">
+                      <button
+                        type="button"
+                        onClick={() => setOpen(false)}
+                        className={`rounded-xl border px-4 py-2 text-sm font-semibold transition ${
+                          isLight
+                            ? "border-slate-200 bg-white text-slate-700 hover:bg-slate-100"
+                            : "border-white/10 bg-white/5 text-white hover:bg-white/10"
+                        }`}
+                      >
+                        {t("chat.close")}
+                      </button>
+                      <button
+                        type="submit"
+                        disabled={loading}
+                        className="rounded-xl bg-gradient-to-r from-cyan-400 to-blue-600 px-5 py-2 text-sm font-semibold text-slate-950 shadow-lg shadow-cyan-500/30 disabled:opacity-60"
+                      >
+                        {loading ? t("chat.sending") : t("chat.send")}
+                      </button>
+                    </div>
+                  </form>
+                ) : (
+                  <div className="flex h-full flex-col space-y-3">
+                    <h3 className="text-lg font-semibold">{t("chat.help.title")}</h3>
+                    <p className={`text-sm ${isLight ? "text-slate-600" : "text-slate-300"}`}>
+                      {t("chat.help.subtitle")}
+                    </p>
+                    <div
+                      className={`flex-1 space-y-3 rounded-2xl border p-4 text-sm shadow-inner shadow-black/5 dark:shadow-black/30 ${
+                        isLight ? "border-slate-200 bg-white" : "border-white/10 bg-slate-900/50"
                       }`}
                     >
-                      {t("chat.close")}
-                    </button>
-                    <button
-                      type="submit"
-                      disabled={loading}
-                      className="rounded-xl bg-gradient-to-r from-cyan-400 to-blue-600 px-5 py-2 text-sm font-semibold text-slate-950 shadow-lg shadow-cyan-500/30 disabled:opacity-60"
-                    >
-                      {loading ? t("chat.sending") : t("chat.send")}
-                    </button>
+                      {Array.isArray(faqItems) &&
+                        faqItems.map((item) => (
+                          <div key={item.q} className="rounded-xl bg-white/40 p-3 text-left shadow-sm shadow-black/5 dark:bg-white/5 dark:shadow-black/20">
+                            <p className="font-semibold">{item.q}</p>
+                            <p className={`mt-1 text-xs ${isLight ? "text-slate-600" : "text-slate-300"}`}>{item.a}</p>
+                          </div>
+                        ))}
+                    </div>
                   </div>
-                </form>
-              ) : (
-                <div className="space-y-3">
-                  <h3 className="text-lg font-semibold">{t("chat.help.title")}</h3>
-                  <p className={`text-sm ${isLight ? "text-slate-600" : "text-slate-300"}`}>
-                    {t("chat.help.subtitle")}
-                  </p>
-                  <div
-                    className={`space-y-3 rounded-2xl border p-4 text-sm shadow-inner shadow-black/5 dark:shadow-black/30 ${
-                      isLight ? "border-slate-200 bg-white" : "border-white/10 bg-slate-900/50"
-                    }`}
-                  >
-                    {Array.isArray(faqItems) &&
-                      faqItems.map((item) => (
-                        <div key={item.q} className="rounded-xl bg-white/40 p-3 text-left shadow-sm shadow-black/5 dark:bg-white/5 dark:shadow-black/20">
-                          <p className="font-semibold">{item.q}</p>
-                          <p className={`mt-1 text-xs ${isLight ? "text-slate-600" : "text-slate-300"}`}>{item.a}</p>
-                        </div>
-                      ))}
-                  </div>
-                </div>
-              )}
+                )}
+              </div>
             </div>
           </div>
         </div>

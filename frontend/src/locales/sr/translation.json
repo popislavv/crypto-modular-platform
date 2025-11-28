@@ -88,8 +88,10 @@
       "below": "Upozori kada cena padne ispod",
       "threshold": "Prag cene (USD)",
       "placeholder": "npr. 65000",
+      "clear": "Obriši alert",
       "save": "Sačuvaj upozorenje",
       "invalid": "Unesi ispravan prag cene.",
+      "cleared": "Alert je uklonjen.",
       "saved": "Upozorenje je sačuvano.",
       "hit": "{{coin}} je prešao prag {{threshold}} ({{direction}})"
     },

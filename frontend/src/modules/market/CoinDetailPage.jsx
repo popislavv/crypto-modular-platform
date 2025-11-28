@@ -186,12 +186,32 @@ export default function CoinDetailPage() {
     ];
   }, [coin, currency, isLight, t]);
 
-  function saveAlert() {
-    const thresholdValue = Number(alertThreshold);
-    if (!thresholdValue) {
-      setToast({ message: t("coin.alerts.invalid"), variant: "warning" });
-      return;
+  function clearAlertState(keyPrefix) {
+    try {
+      const triggeredRaw = localStorage.getItem(ALERT_TRIGGER_STATE_KEY);
+      const triggeredState = triggeredRaw ? JSON.parse(triggeredRaw) : {};
+      Object.keys(triggeredState).forEach((key) => {
+        if (key.startsWith(keyPrefix)) {
+          delete triggeredState[key];
+        }
+      });
+      localStorage.setItem(ALERT_TRIGGER_STATE_KEY, JSON.stringify(triggeredState));
+
+      const dismissedRaw = localStorage.getItem("priceAlertDismissedState");
+      const dismissedState = dismissedRaw ? JSON.parse(dismissedRaw) : {};
+      Object.keys(dismissedState).forEach((key) => {
+        if (key.startsWith(keyPrefix)) {
+          delete dismissedState[key];
+        }
+      });
+      localStorage.setItem("priceAlertDismissedState", JSON.stringify(dismissedState));
+    } catch (e) {
+      // best-effort cleanup
     }
+  }
+
+  function saveAlert() {
+    const rawValue = `${alertThreshold}`.trim();
 
     const existing = localStorage.getItem(ALERT_STORAGE_KEY);
     let parsed = {};
@@ -203,25 +223,23 @@ export default function CoinDetailPage() {
       }
     }
 
+    if (rawValue === "") {
+      delete parsed[id];
+      localStorage.setItem(ALERT_STORAGE_KEY, JSON.stringify(parsed));
+      clearAlertState(`${id}-`);
+      setToast({ message: t("coin.alerts.cleared"), variant: "success" });
+      return;
+    }
+
+    const thresholdValue = Number(rawValue);
+    if (!Number.isFinite(thresholdValue) || thresholdValue <= 0) {
+      setToast({ message: t("coin.alerts.invalid"), variant: "warning" });
+      return;
+    }
+
     parsed[id] = { direction: alertDirection, threshold: thresholdValue };
     localStorage.setItem(ALERT_STORAGE_KEY, JSON.stringify(parsed));
-    try {
-      const triggeredRaw = localStorage.getItem(ALERT_TRIGGER_STATE_KEY);
-      const triggeredState = triggeredRaw ? JSON.parse(triggeredRaw) : {};
-      const key = `${id}-${alertDirection}-${thresholdValue}`;
-      if (triggeredState[key]) {
-        delete triggeredState[key];
-        localStorage.setItem(ALERT_TRIGGER_STATE_KEY, JSON.stringify(triggeredState));
-      }
-      const dismissedRaw = localStorage.getItem("priceAlertDismissedState");
-      const dismissedState = dismissedRaw ? JSON.parse(dismissedRaw) : {};
-      if (dismissedState[key]) {
-        delete dismissedState[key];
-        localStorage.setItem("priceAlertDismissedState", JSON.stringify(dismissedState));
-      }
-    } catch (e) {
-      // ignore cleanup failures
-    }
+    clearAlertState(`${id}-${alertDirection}-${thresholdValue}`);
     setToast({ message: t("coin.alerts.saved"), variant: "success" });
   }
 
@@ -412,7 +430,21 @@ export default function CoinDetailPage() {
                   placeholder={t("coin.alerts.placeholder")}
                 />
               </label>
-              <div className="flex justify-end md:col-span-1">
+              <div className="flex flex-col gap-2 md:col-span-1">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setAlertThreshold("");
+                    saveAlert();
+                  }}
+                  className={`w-full rounded-xl border px-5 py-3 text-sm font-semibold transition ${
+                    isLight
+                      ? "border-slate-200 bg-white text-slate-700 hover:bg-slate-100"
+                      : "border-white/10 bg-white/5 text-white hover:bg-white/10"
+                  }`}
+                >
+                  {t("coin.alerts.clear")}
+                </button>
                 <button
                   onClick={saveAlert}
                   className="w-full rounded-xl bg-gradient-to-r from-cyan-400 to-blue-600 px-5 py-3 text-sm font-semibold text-slate-950 shadow-lg shadow-cyan-500/30"

@@ -138,22 +138,35 @@ app.post("/contact", async (req, res) => {
   }
 
   try {
-    const transporter = nodemailer.createTransport(
-      process.env.SMTP_HOST
-        ? {
+    const smtpTransport =
+      process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASS
+        ? nodemailer.createTransport({
             host: process.env.SMTP_HOST,
             port: Number(process.env.SMTP_PORT) || 587,
             secure: false,
-            auth:
-              process.env.SMTP_USER && process.env.SMTP_PASS
-                ? {
-                    user: process.env.SMTP_USER,
-                    pass: process.env.SMTP_PASS,
-                  }
-                : undefined,
-          }
-        : { jsonTransport: true }
-    );
+            auth: {
+              user: process.env.SMTP_USER,
+              pass: process.env.SMTP_PASS,
+            },
+          })
+        : null;
+
+    const gmailTransport =
+      process.env.GMAIL_USER && process.env.GMAIL_PASS
+        ? nodemailer.createTransport({
+            service: "gmail",
+            auth: {
+              user: process.env.GMAIL_USER,
+              pass: process.env.GMAIL_PASS,
+            },
+          })
+        : null;
+
+    const transporter = smtpTransport || gmailTransport;
+
+    if (!transporter) {
+      return res.status(500).json({ error: "mail transport not configured" });
+    }
 
     await transporter.sendMail({
       from: process.env.SMTP_FROM || email,

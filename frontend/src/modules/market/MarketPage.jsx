@@ -30,6 +30,7 @@ export default function MarketPage() {
     [t]
   );
   const activeSegmentIndex = Math.max(0, segmentOptions.findIndex((o) => o.key === viewMode));
+  const segmentWidth = 100 / segmentOptions.length;
 
   async function loadData() {
     try {
@@ -227,26 +228,29 @@ export default function MarketPage() {
           </div>
           <div className="flex flex-wrap items-center gap-3">
             <div
-              className={`relative inline-flex w-full max-w-md items-center rounded-full border p-1 text-xs font-semibold shadow-inner ${
+              className={`relative inline-flex w-full min-w-[340px] max-w-2xl items-center rounded-full border p-1 text-sm font-semibold shadow-inner ${
                 isLight
                   ? "border-slate-200 bg-white shadow-slate-200/60"
                   : "border-white/10 bg-slate-900/70 shadow-black/30"
               }`}
             >
               <span
-                className={`absolute inset-y-1 left-1 w-1/3 rounded-full transition-transform duration-300 ease-in-out ${
+                className={`absolute inset-y-1 left-1 rounded-full transition-all duration-300 ease-in-out ${
                   isLight
                     ? "bg-cyan-100 shadow-sm shadow-cyan-200"
                     : "bg-white text-slate-900 shadow-sm shadow-cyan-500/40"
                 }`}
-                style={{ transform: `translateX(${activeSegmentIndex * 100}%)` }}
+                style={{
+                  width: `${segmentWidth}%`,
+                  transform: `translateX(${activeSegmentIndex * segmentWidth}%)`,
+                }}
                 aria-hidden
               />
               {segmentOptions.map((option) => (
                 <button
                   key={option.key}
                   onClick={() => setViewMode(option.key)}
-                  className={`relative z-10 flex-1 rounded-full px-4 py-2 transition-colors ${
+                  className={`relative z-10 flex-1 rounded-full px-6 py-2.5 transition-colors ${
                     viewMode === option.key
                       ? isLight
                         ? "text-cyan-900"

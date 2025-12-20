@@ -103,30 +103,6 @@ export default function MarketPage() {
   const chipBorder = isLight ? "border-slate-200" : "border-white/10";
   const chipBg = isLight ? "bg-white/80" : "bg-white/5";
 
-  const metrics = useMemo(() => {
-    const totalMarketCap = coins.reduce((sum, c) => sum + (c.market_cap || 0), 0);
-    const totalVolume = coins.reduce((sum, c) => sum + (c.total_volume || 0), 0);
-    const btc = coins.find((c) => c.id === "bitcoin");
-    const eth = coins.find((c) => c.id === "ethereum");
-    const dominance = totalMarketCap > 0 && btc ? (btc.market_cap / totalMarketCap) * 100 : null;
-    const ethDominance = totalMarketCap > 0 && eth ? (eth.market_cap / totalMarketCap) * 100 : null;
-
-    return { totalMarketCap, totalVolume, dominance, ethDominance };
-  }, [coins]);
-
-  const topMovers = useMemo(() => {
-    return [...filteredCoins]
-      .sort((a, b) => (b.price_change_percentage_24h || 0) - (a.price_change_percentage_24h || 0))
-      .slice(0, 6);
-  }, [filteredCoins]);
-
-  const heroTone = isLight
-    ? "glass-panel border border-slate-200/80 bg-gradient-to-br from-white via-white to-slate-100 text-slate-900"
-    : "glass-panel border border-white/10 bg-gradient-to-br from-slate-900/80 via-slate-900/50 to-slate-950/70 text-white";
-  const chipText = isLight ? "text-slate-700" : "text-slate-200";
-  const chipBorder = isLight ? "border-slate-200" : "border-white/10";
-  const chipBg = isLight ? "bg-white/80" : "bg-white/5";
-
   return (
     <div className={`space-y-8 ${isLight ? "text-slate-900" : "text-white"}`}>
       <div className={`${heroTone} p-6`}>

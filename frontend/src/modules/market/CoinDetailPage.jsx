@@ -27,6 +27,7 @@ const RANGE_TO_DAYS = {
 };
 const ALERT_STORAGE_KEY = "priceAlerts";
 const ALERT_TRIGGER_STATE_KEY = "priceAlertTriggeredState";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:3100";
 
 export default function CoinDetailPage() {
   const { id } = useParams(); // npr. "bitcoin"
@@ -78,7 +79,7 @@ export default function CoinDetailPage() {
         setError(null);
 
         const res = await axios.get(
-          `https://api.coingecko.com/api/v3/coins/${id}?localization=false&tickers=false&community_data=false&developer_data=false&sparkline=false`
+          `${API_BASE_URL}/coin/${id}`
         );
         setCoin(res.data);
       } catch (e) {
@@ -107,9 +108,9 @@ export default function CoinDetailPage() {
         const days = RANGE_TO_DAYS[range];
 
         // Free CoinGecko → automatic interval (best available)
-        const res = await axios.get(
-          `https://api.coingecko.com/api/v3/coins/${id}/market_chart?vs_currency=usd&days=${days}`
-        );
+        const res = await axios.get(`${API_BASE_URL}/coin/${id}/market_chart`, {
+          params: { days },
+        });
 
         const points = res.data.prices.map(([ts, price]) => {
           const d = new Date(ts);

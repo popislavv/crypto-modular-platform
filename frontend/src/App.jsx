@@ -116,7 +116,7 @@ function Shell() {
             </Link>
             <button
               onClick={() => setMobileOpen((prev) => !prev)}
-              className={`inline-flex h-10 w-10 items-center justify-center rounded-xl border text-lg transition md:hidden ${
+              className={`inline-flex h-10 w-10 flex-col items-center justify-center gap-1 rounded-xl border text-lg transition md:hidden ${
                 isLight
                   ? "border-slate-200 bg-white text-slate-800 shadow"
                   : "border-white/10 bg-white/5 text-white"
@@ -124,8 +124,8 @@ function Shell() {
               aria-label={t("nav.toggleMenu")}
             >
               <span className="block h-0.5 w-5 rounded-full bg-current" />
-              <span className="mt-1 block h-0.5 w-5 rounded-full bg-current" />
-              <span className="mt-1 block h-0.5 w-5 rounded-full bg-current" />
+              <span className="block h-0.5 w-5 rounded-full bg-current" />
+              <span className="block h-0.5 w-5 rounded-full bg-current" />
             </button>
           </div>
         </div>

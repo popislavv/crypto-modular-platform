@@ -32,7 +32,7 @@ export default function WalletPage() {
 
   async function loadBalanceValue(addr) {
     const res = await axios.get(`http://localhost:3100/wallet/${addr}`);
-    return res.data.balance;
+    return res.data.balance_eth ?? res.data.balance;
   }
 
   async function loadTokensList(addr) {

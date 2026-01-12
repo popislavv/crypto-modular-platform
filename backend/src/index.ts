@@ -275,7 +275,13 @@ app.get("/wallet/:address", async (req: express.Request, res: express.Response) 
     const balanceInWei = parseInt(balanceHex, 16);
     const balanceInEth = balanceInWei / 1e18;
 
-    res.json({ address, balance: balanceInEth });
+    res.json({
+      address,
+      balance_eth: balanceInEth,
+      tokens: [],
+      transactions: [],
+      asOf: new Date().toISOString(),
+    });
   } catch (error) {
     console.error("[wallet] upstream error", error);
     sendError(
